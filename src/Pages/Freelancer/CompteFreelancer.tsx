@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function CompteArtisant() {
+export default function CompteFreelancer() {
   return (
     <div>
       

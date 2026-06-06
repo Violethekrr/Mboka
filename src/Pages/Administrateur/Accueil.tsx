@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function CompteClientSignalement() {
+export default function Accueil() {
   return (
     <div>
       

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function messagerie() {
+export default function Messagerie() {
   return (
     <div>
       
