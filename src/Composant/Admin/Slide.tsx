@@ -107,23 +107,18 @@ export default function AdminSidebar() {
                 to="/administrateur"
                 className="flex items-center gap-2.5 no-underline"
               >
-                <div className="w-8.5 h-8.5 rounded-xl bg-[#FE6864] flex items-center justify-center font-black text-white">
-                  <span className={TEXT.sm}>M</span>
+                <div className="w-25 h-25 rounded-xl  flex items-center justify-center font-black text-white">
+                 <img src="/MbokaSansFond2.png" alt="Logo" className="w-25 h-25  p-1" />
                 </div>
-
-                <div>
-                  <div
-                    className={`font-extrabold text-white ${TEXT.sm} leading-none`}
-                  >
-                    MBO<span className="text-[#FE6864]">KA</span>
-                  </div>
+      
+                 
 
                   <div
                     className={`${TEXT.sub} text-[#55555e] mt-0.5 tracking-[0.5px]`}
                   >
                     ADMINISTRATION
                   </div>
-                </div>
+              
               </Link>
 
               <button

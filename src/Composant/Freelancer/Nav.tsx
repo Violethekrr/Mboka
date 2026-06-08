@@ -61,10 +61,10 @@ export default function NavBar() {
 
         {/* Logo */}
         <Link to="/client" className="no-underline flex items-center gap-2.5 mr-6">
-          <div className="w-8 h-8 rounded-xl bg-[#FE6864] flex items-center justify-center font-black text-white">
-            <span className={TEXT.sm}>M</span>
+          <div className="w-25 h-25 rounded-xl  flex items-center justify-center font-black text-white">
+                 <img src="/MbokaSansFond2.png" alt="Logo" className="w-25 h-25  p-1" />
           </div>
-          <span className={`font-extrabold ${TEXT.sm} text-white`}>MBO<span className="text-[#FE6864]">KA</span></span>
+    
         </Link>
 
         {/* Desktop nav */}
