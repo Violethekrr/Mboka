@@ -111,10 +111,8 @@ export default function AdminSidebar() {
                  <img src="/MbokaSansFond2.png" alt="Logo" className="w-25 h-25  p-1" />
                 </div>
       
-                 
-
                   <div
-                    className={`${TEXT.sub} text-[#55555e] mt-0.5 tracking-[0.5px]`}
+                    className={`${TEXT.sub} relative -left-7 text-white/80 mt-0.5 tracking-[0.5px]`}
                   >
                     ADMINISTRATION
                   </div>
@@ -123,7 +121,7 @@ export default function AdminSidebar() {
 
               <button
                 onClick={() => setOpen(false)}
-                className="bg-transparent border border-[#1e1e26] text-[#55555e] rounded-lg w-7 h-7 flex items-center justify-center cursor-pointer"
+                className="bg-transparent relative -left-7 border border-[#1e1e26] text-white/80 rounded-lg w-7 h-7 flex items-center justify-center cursor-pointer"
               >
                 <ChevronLeft size={14} />
               </button>
@@ -132,7 +130,7 @@ export default function AdminSidebar() {
             {/* Navigation */}
             <div className="flex-1 px-2.5 py-2.5 flex flex-col gap-0.5 overflow-y-auto">
               <p
-                className={`mx-1.5 mb-2 mt-1.5 ${TEXT.sub} text-[#55555e] font-bold uppercase tracking-[1.2px]`}
+                className={`mx-1.5 mb-2 mt-1.5 ${TEXT.sub} text-white/80 font-bold uppercase tracking-[1.2px]`}
               >
                 Menu principal
               </p>
@@ -144,10 +142,10 @@ export default function AdminSidebar() {
                   end={route === "/administrateur"}
                   onClick={() => setOpen(false)}
                   className={({ isActive }) =>
-                    `flex items-center gap-2.5 px-3 py-2.25 rounded-xl no-underline ${TEXT.sm} transition-all duration-150 ${
+                    `flex items-center gap-2.5 px-3 py-2.25 rounded-lg no-underline ${TEXT.sm} transition-all duration-150 ${
                       isActive
-                        ? "font-semibold text-[#FE6864] bg-[#FE686418] border-l-2 border-[#FE6864]"
-                        : "font-normal text-[#9090a0] bg-transparent border-l-2 border-transparent hover:text-white hover:bg-white/5"
+                        ? "font-semibold text-[#FE6864] bg-[#FE686418]"
+                        : "font-normal text-white/90 bg-transparent border-l-2 border-transparent hover:text-white hover:bg-white/5"
                     }`
                   }
                 >
@@ -155,7 +153,7 @@ export default function AdminSidebar() {
                     <>
                       <span
                         className={`shrink-0 ${
-                          isActive ? "opacity-100" : "opacity-60"
+                          isActive ? "opacity-100" : "opacity-90"
                         }`}
                       >
                         {icon}
@@ -188,7 +186,7 @@ export default function AdminSidebar() {
                     {user?.nom} 
                   </div>
 
-                  <div className={`${TEXT.xs} text-[#55555e]`}>
+                  <div className={`${TEXT.xs} text-white/80 truncate`}>
                     {user?.email}
                   </div>
                 </div>
@@ -198,7 +196,7 @@ export default function AdminSidebar() {
 
               <Link
                 to="/"
-                className={`flex items-center gap-2.5 px-3 py-2.25 rounded-xl no-underline ${TEXT.sm} text-red-500 hover:bg-red-500/10 transition-all`}
+                className={`flex items-center gap-2.5 px-3 py-2.25 rounded-xl no-underline ${TEXT.sm} text-gray-400 hover:bg-red-500/10 transition-all`}
               >
                 <LogOut size={14} />
                 Déconnexion

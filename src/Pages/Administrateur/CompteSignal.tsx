@@ -321,7 +321,7 @@ export default function CompteSignale() {
                         return (
                           <button key={s} onClick={() => setFiltreStatut(s)}
                             className={`px-3 py-1 rounded-full ${TEXT.xs} border cursor-pointer transition-all
-                              ${isA ? "font-bold border-white/30 bg-white/10 text-white" : "font-normal border-[#22222c] bg-transparent text-[#55555e]"}`}>
+                              ${isA ? "font-bold border-white/30 bg-white/10 text-white" : "font-normal border-[#22222c] bg-transparent text-white/80"}`}>
                             {label}
                           </button>
                         );
@@ -329,14 +329,14 @@ export default function CompteSignale() {
                     </div>
                   </div>
                   <div>
-                    <p className={`m-0 mb-2 ${TEXT.label} text-[#55555e] font-semibold uppercase tracking-[0.8px]`}>Catégorie</p>
+                    <p className={`m-0 mb-2 ${TEXT.label} text-white/80 font-semibold uppercase tracking-[0.8px]`}>Catégorie</p>
                     <div className="flex gap-1.5 flex-wrap">
                       {categories.map(c => {
                         const isA = filtreCategorie === c;
                         return (
                           <button key={c} onClick={() => setFiltreCategorie(c)}
                             className={`px-3 py-1 rounded-full ${TEXT.xs} border cursor-pointer capitalize transition-all
-                              ${isA ? "font-bold border-[#FE686480] bg-[#FE686418] text-[#FE6864]" : "font-normal border-[#22222c] bg-transparent text-[#55555e]"}`}>
+                              ${isA ? "font-bold border-[#FE686480] bg-[#FE686418] text-[#FE6864]" : "font-normal border-[#22222c] bg-transparent text-white/90"}`}>
                             {c === "tout" ? "Toutes" : c}
                           </button>
                         );
@@ -345,7 +345,7 @@ export default function CompteSignale() {
                   </div>
                   <div className="ml-auto">
                     <button onClick={() => setSortDir(d => d === "asc" ? "desc" : "asc")}
-                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#22222c] bg-transparent text-[#55555e] ${TEXT.xs} cursor-pointer`}>
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#22222c] bg-transparent text-white/80 ${TEXT.xs} cursor-pointer`}>
                       <ArrowUpDown size={12} /> Tri : {sortDir === "desc" ? "Récent" : "Ancien"}
                     </button>
                   </div>
