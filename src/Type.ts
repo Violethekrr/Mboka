@@ -8,13 +8,14 @@ export interface StatutService {
 
 export interface Clients {
   id_client: number,
-  Nom: string,
+  nom: string,
   prenom: string,
   email: string,
   Telephone: string,
- photo:string,
- mot_de_passe:string,
- date_creation:string}
+  photo:string,
+  mot_de_passe:string,
+  date_creation:string
+}
 
 export interface Freelancers{
 id_freelancer:number, 
@@ -98,12 +99,21 @@ id_notification: number,
 id_client: number | null,
  id_freelancer: number | null, 
 id_admin: number | null,
- notification:string}
+ notification:string, date?:string,
+lu?: boolean,
+}
 
-export interface Signalements {
-id_signale: number, 
-id_signaleur: number, 
-Signalement:string}
+export interface Signalement {
+  id_signalement: number;
+  id_signaleur: number;
+  id_signalé: number;
+  signaleur_type: "client" | "freelancer" | "admin";
+  Signalement: string;
+  statut?: "en_attente" | "en_cours" | "resolu" | "rejete";
+  date?: string;
+  categorie?: string;
+  note_admin?: string;
+}
 
 export interface Justifications {
 id_justification: number, 
