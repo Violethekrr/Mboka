@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Bell, Circle, X, LogOut, Menu, BriefcaseBusiness, House, MessageCircle, User, Wallet } from "lucide-react";
+import { Bell, Circle, X, LogOut, Menu, BriefcaseBusiness, House, MessageCircle, User, Wallet, MessageSquareText } from "lucide-react";
 import { notificationsMock } from "../../constants";
 import { useUser } from "../../Context/UtilisateurContext";
 import type { Notifications } from "../../Type";
@@ -23,7 +23,8 @@ const freelancerLinks = [
   { id: 2, label: "Services",   route: "/freelancer/services",   icon: <BriefcaseBusiness size={16} /> },
   { id: 3, label: "Messagerie", route: "/freelancer/messagerie", icon: <MessageCircle size={16} />    },
   { id: 4, label: "Compte",     route: "/freelancer/compte",     icon: <User size={16} />             },
-  { id: 5, label: "Wallet",     route: "/wallet",                icon: <Wallet size={16} />           },
+  { id: 5, label: "Avis & Commentaires",     route: "/freelancer/avisetcommentaires",     icon: <MessageSquareText size={16} />             },
+  { id: 6, label: "Wallet",     route: "/wallet",                icon: <Wallet size={16} />           },
 ];
 
 export default function NavBar() {
