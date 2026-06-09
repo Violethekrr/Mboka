@@ -29,7 +29,7 @@ type UserProviderProps = {
 };
 
 export const UserProvider = ({ children }: UserProviderProps) => {
-  const [role, setRole] = useState<UserRole>('admin');
+  const [role, setRole] = useState<UserRole>('client');
   const [user, setUser] = useState<Clients | Freelancers | Administrateur | null>(freelancersMock[0]);
 
   return (
