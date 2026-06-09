@@ -21,6 +21,7 @@ import ServicesClient from "./Pages/Client/ServicesClient";
 import AccueilFreelancer from "./Pages/Freelancer/Accueil";
 import CompteFreelancer from "./Pages/Freelancer/CompteFreelancer";
 import ServicesFreelancers from "./Pages/Freelancer/ServicesFreelancers";
+import AvisEtCommentaires from "./Pages/Freelancer/AvisEtCommentaires";
 
 // Général
 import Connexion from "./Pages/General/Connexion";
@@ -49,6 +50,7 @@ function AnimatedRoutes() {
         <Route path="/freelancer/services" element={<ServicesFreelancers />} />
         <Route path="/freelancer/compte" element={<CompteFreelancer />} />
         <Route path="/freelancer/messagerie" element={<Messagerie />} />
+        <Route path="/freelancer/avisetcommentaires" element={<AvisEtCommentaires />} />
 
         {/* Admin */}
         <Route path="/administrateur" element={<AccueilAdmin />} />
