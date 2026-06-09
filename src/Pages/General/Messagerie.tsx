@@ -47,7 +47,7 @@ const ConversationsList = ({
   );
 
   return (
-    <div className="w-full lg:w-75 bg-[#1a1a20] lg:border-r border-[#2a2a32] flex flex-col h-full">
+    <div className="w-full lg:w-75  border-white/10 bg-[#202023]  lg:border-r  flex flex-col h-full">
       {/* Header sidebar */}
       <div className="p-5 pb-3.5">
         <div className="flex justify-between items-center mb-3.5">
@@ -62,7 +62,7 @@ const ConversationsList = ({
             value={search} 
             onChange={e => setSearch(e.target.value)} 
             placeholder="Rechercher..." 
-            className={`${TEXT.label} w-full bg-[#1e1e24] border border-[#2a2a32] rounded-lg py-2 px-2.5 pl-7.5 text-white outline-none box-border`}
+            className={`${TEXT.label} w-full border  border-white/10 bg-[#202023]  rounded-lg py-2 px-2.5 pl-7.5 text-white outline-none box-border`}
           />
         </div>
       </div>
@@ -142,9 +142,9 @@ const ChatArea = ({
   }, [activeConv.messages]);
 
   return (
-    <div className="flex-1 flex flex-col bg-[#16161a] h-full mt-12">
+    <div className="flex-1 flex flex-col bg-[#16161a] h-full ">
       {/* Header chat */}
-      <div className="py-3.5 px-5 border-b border-[#2a2a32] bg-[#1e1e24] flex items-center gap-3">
+      <div className="py-3.5 px-5 border-b  border-white/10 bg-[#202023]  flex items-center gap-3">
         {/* Bouton retour mobile */}
         <button 
           onClick={onBack}
@@ -228,7 +228,7 @@ const ChatArea = ({
                 <div className={`${TEXT.sm} py-2.5 px-3.5 leading-5
                   ${isMe 
                     ? 'rounded-t-2xl rounded-b-2xl rounded-bl-md bg-[#FE6864] text-white' 
-                    : 'rounded-t-2xl rounded-b-2xl rounded-br-md bg-[#1e1e24] text-white border border-[#2a2a32]'
+                    : 'rounded-t-2xl rounded-b-2xl rounded-br-md  border-white/10 bg-[#202023]  text-white border '
                   }`}>
                   {msg.contenu_message}
                 </div>
@@ -267,7 +267,7 @@ const ChatArea = ({
       </div>
 
       {/* Input */}
-      <div className="py-3.5 px-5 border-t border-[#2a2a32] bg-[#1e1e24] flex gap-2.5 items-center">
+      <div className="py-3.5 px-5 border-t  border-white/10 bg-[#202023]  flex gap-2.5 items-center">
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -371,7 +371,7 @@ export default function MessageriePage() {
   return (
     <div className="min-h-screen bg-[#16161a] font-['Segoe_UI',sans-serif] text-white flex flex-col">
       {/* Layout */}
-      <div className="flex-1 flex max-w-350 mx-auto mt-15.5 w-full h-[calc(100vh-62px)]">
+      <div className="flex-1 flex   mt-15.5 w-full h-[calc(100vh-62px)]">
         
         {/* Sur desktop: affichage côte à côte */}
         <div className="hidden lg:flex w-full">
