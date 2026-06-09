@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 export interface StatutService {
   EN_ATTENTE: "en_attente",
   CONFIRME: "confirme",
@@ -128,3 +129,110 @@ id_avertissement:number,
   id_freelancer: number | null;
 id_admin: number | null;
 contenu_avertissement:string}
+
+export type ArtisanCardProps = {
+  id: number;
+  photo: string;
+  nom: string;
+  prenom: string;
+  metier: string;
+  note: number;
+  avis: number;
+  distance: string;
+  prix: string;
+  disponible: boolean;
+  verified: boolean;
+  badge?: "Expert" | "Premium";
+  id_freelancer?: number;
+  currentClientId?: number;
+  onOpenComments?: (freelancerId: number, nom: string, photo: string, metier: string) => void;
+  onOpenForm?: (artisan: {
+    photo: string;
+    nom: string;
+    metier: string;
+    note: number;
+    avis: number;
+    verified: boolean;
+    disponible: boolean;
+  }) => void;
+};
+
+export type Category = {
+  label: string;
+  icon: LucideIcon;
+};
+
+export type Props = {
+  freelancerId: number;
+  freelancerNom: string;
+  freelancerPhoto: string;
+  freelancerMetier: string;
+  currentClientId: number;
+  onClose: () => void;
+};
+
+export type FormulaireProps = {
+  artisan: {
+    photo: string;
+    nom: string;
+    metier: string;
+    note: number;
+    avis: number;
+    verified: boolean;
+    disponible: boolean;
+  };
+  onClose: () => void;
+};
+
+export type RecommendedSectionProps = {
+  onOpenComments?: (freelancerId: number, nom: string, photo: string, metier: string) => void;
+  onOpenForm?: (artisan: {
+    photo: string;
+    nom: string;
+    metier: string;
+    note: number;
+    avis: number;
+    verified: boolean;
+    disponible: boolean;
+  }) => void;
+};
+export type FeaturedArtisansProps = {
+  searchQuery?: string;
+  selectedCategory?: string | null;
+  onOpenComments?: (freelancerId: number, nom: string, photo: string, metier: string) => void;
+  onOpenForm?: (artisan: {
+    photo: string;
+    nom: string;
+    metier: string;
+    note: number;
+    avis: number;
+    verified: boolean;
+    disponible: boolean;
+  }) => void;
+};
+
+export type CommentsModalData = {
+  isOpen: boolean;
+  freelancerId: number;
+  freelancerNom: string;
+  freelancerPhoto: string;
+  freelancerMetier: string;
+};
+
+export type FormModalData = {
+  isOpen: boolean;
+  artisan: {
+    photo: string;
+    nom: string;
+    metier: string;
+    note: number;
+    avis: number;
+    verified: boolean;
+    disponible: boolean;
+  } | null;
+};
+
+export type ModalState = {
+  comments: CommentsModalData;
+  form: FormModalData;
+};

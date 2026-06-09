@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { Clients, Freelancers, Administrateur } from "../Type";
-import { administrateursMock, } from "../constants";
+import { clientsMock } from "../constants";
 
 export type UserRole = "client" | "freelancer" | "admin" | null;
 
@@ -29,8 +29,8 @@ type UserProviderProps = {
 };
 
 export const UserProvider = ({ children }: UserProviderProps) => {
-  const [role, setRole] = useState<UserRole>('admin');
-  const [user, setUser] = useState<Clients | Freelancers | Administrateur | null>(administrateursMock[0]);
+  const [role, setRole] = useState<UserRole>('client');
+  const [user, setUser] = useState<Clients | Freelancers | Administrateur | null>(clientsMock[0]);
 
   return (
     <UserContext.Provider value={{ role, setRole, user, setUser }}>
