@@ -29,11 +29,11 @@ export default function Connexion() {
   );
 
   if (client) {
-    navigate("/client");
+    navigate("/MonCompte");
   } else if (freelancer) {
     navigate("/Freelancer");
   } else if (admin) {
-    navigate("/administrateur");
+    navigate("/dashboardadmin");
   } else {
     alert("Identifiants incorrects");
   }

@@ -17,8 +17,8 @@ export default function Layout({ children } : Props) {
 
     const location = useLocation();
     //La liste des routes où la Navbar et le Footer ne doivent pas apparaître
-    const routesNav = ['/Contact', '/inscription', '/'];
-    const routesFooter = ['/Contact', '/inscription', '/'];
+    const routesNav = ['/Contact'];
+    const routesFooter = ['/Contact'];
     //Verifier si la route actuelle est dans la list
     const hiddenNav = routesNav.includes(location.pathname);
     const hiddenFooter = routesFooter.includes(location.pathname);

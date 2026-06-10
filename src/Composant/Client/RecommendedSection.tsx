@@ -1,229 +1,143 @@
-import { useState } from "react";
-import { ArrowRight, CheckCircle, MapPin, Star } from "lucide-react";
+import { ArrowRight, Star, MapPin, CheckCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import { freelancersMock, profilsFreelancersMock } from "../../constants";
 import type { RecommendedSectionProps } from "../../Type";
 
-import {
-  commentairesMock,
-  freelancersMock,
-  profilsFreelancersMock,
-} from "../../constants";
-
-import FreelancerDetailsModal from "./FreelancerDetailsModal";
-
-type FreelancerDetail = {
-  id_freelancer: number;
-  nom: string;
-  prenom: string;
-  photo: string;
-  metier: string;
-  secteur: string;
-  description: string;
-  note: number;
-  avis: number;
-  distance: string;
-  disponible: boolean;
+const extras: Record<number, { note: number; avis: number; distance: string; prix: string; disponible: boolean }> = {
+  7:  { note: 4.8, avis: 112, distance: "2 km", prix: "6 000", disponible: true  },
+  8:  { note: 4.6, avis: 79,  distance: "3 km", prix: "8 500", disponible: false },
+  9:  { note: 4.9, avis: 201, distance: "1 km", prix: "5 500", disponible: true  },
+  10: { note: 4.7, avis: 95,  distance: "4 km", prix: "7 000", disponible: true  },
 };
 
-export default function RecommendedSection({
-  onOpenComments,
-  onOpenForm,
-}: RecommendedSectionProps) {
-  const [freelancerSelectionne, setFreelancerSelectionne] =
-    useState<FreelancerDetail | null>(null);
+export default function RecommendedSection({ onOpenComments, onOpenForm }: RecommendedSectionProps) {
+  // On prend les freelancers 7 à 10 du mock pour varier
+  const recommended = freelancersMock.slice(6, 10).map((f) => {
+    const profil = profilsFreelancersMock.find((p) => p.id_freelancer === f.id_freelancer);
+    const extra  = extras[f.id_freelancer] ?? { note: 4.5, avis: 50, distance: "5 km", prix: "5 000", disponible: true };
+    return { ...f, profil, ...extra };
+  });
 
-  const freelancersRecommandes = freelancersMock
-    .map((freelancer) => {
-      const profil = profilsFreelancersMock.find(
-        (item) => item.id_freelancer === freelancer.id_freelancer
-      );
+  const handleOpenComments = (freelancerId: number, nom: string, photo: string, metier: string) => {
+    if (onOpenComments) {
+      onOpenComments(freelancerId, nom, photo, metier);
+    }
+  };
 
-      return {
-        id_freelancer: freelancer.id_freelancer,
-        nom: freelancer.nom,
-        prenom: freelancer.prenom,
-        photo: freelancer.photo,
-        metier: profil?.profession ?? "Freelancer",
-        secteur: profil?.secteur_activite ?? "Non renseigné",
-        description: profil?.descritpion ?? "",
-        note: obtenirNoteMoyenne(freelancer.id_freelancer),
-        avis: obtenirNombreAvis(freelancer.id_freelancer),
-        distance: "À proximité",
-        disponible: freelancer.id_freelancer % 3 !== 0,
-      };
-    })
-    .sort((a, b) => b.note - a.note)
-    .slice(0, 4);
-
-  function ouvrirCommentaires(freelancer: FreelancerDetail) {
-    onOpenComments?.(
-      freelancer.id_freelancer,
-      `${freelancer.prenom} ${freelancer.nom}`,
-      freelancer.photo,
-      freelancer.metier
-    );
-  }
-
-  function ouvrirFormulaire(freelancer: FreelancerDetail) {
-    onOpenForm?.({
-      photo: freelancer.photo,
-      nom: `${freelancer.prenom} ${freelancer.nom}`,
-      metier: freelancer.metier,
-      note: freelancer.note,
-      avis: freelancer.avis,
-      verified: true,
-      disponible: freelancer.disponible,
-    });
-
-    setFreelancerSelectionne(null);
-  }
+  const handleOpenForm = (artisanData: {
+    photo: string;
+    nom: string;
+    metier: string;
+    note: number;
+    avis: number;
+    verified: boolean;
+    disponible: boolean;
+  }) => {
+    if (onOpenForm) {
+      onOpenForm(artisanData);
+    }
+  };
 
   return (
     <section className="mb-8">
-      <div className="mb-4 flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <div>
-          <h2 className="text-base font-bold text-white md:text-lg">
+          <h2 className="text-base md:text-lg font-bold text-white">
             Recommandés pour vous
           </h2>
-
-          <p className="mt-0.5 text-[11px] text-[#B8B8BE]">
-            Les freelancers les mieux notés
-          </p>
+          <p className="text-[11px] text-white/40 mt-0.5">Basé sur votre localisation</p>
         </div>
-
         <Link
           to="/client/services"
-          className="flex items-center gap-1 text-xs font-semibold text-[#FF6257] no-underline transition-all hover:gap-2"
+          className="flex items-center gap-1 text-xs text-[#FE6864] font-semibold no-underline hover:gap-2 transition-all"
         >
           Voir tout <ArrowRight size={13} />
         </Link>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 md:overflow-visible lg:grid-cols-4">
-        {freelancersRecommandes.map((freelancer) => (
+      {/* Scroll horizontal mobile, grille desktop */}
+      <div className="flex gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-2 lg:grid-cols-4 md:overflow-visible scrollbar-hide">
+        {recommended.map((r) => (
           <div
-            key={freelancer.id_freelancer}
-            className="group w-64 shrink-0 overflow-hidden rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#FF6257]/40 hover:shadow-[0_8px_32px_rgba(255,98,87,0.14)] md:w-auto"
+            key={r.id_freelancer}
+            className="group shrink-0 w-64 md:w-auto bg-[#24242c] border border-[#2a2a32] hover:border-[#FE686440] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_#FE686418] hover:-translate-y-0.5"
           >
-            <div className="relative h-36 overflow-hidden bg-gradient-to-br from-[#B52D3A]/40 via-[#1B1B1D] to-[#111113]">
+            {/* Cover image */}
+            <div className="relative h-36 overflow-hidden bg-linear-to-br from-[#2a1a1a] to-[#1a1a2e]">
               <img
-                src={freelancer.photo}
-                alt={`${freelancer.prenom} ${freelancer.nom}`}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                src={r.photo}
+                alt={`${r.prenom} ${r.nom}`}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute inset-0 bg-linear-to-t from-[#1e1e22] via-transparent to-transparent" />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-[#1B1B1D] via-transparent to-transparent" />
-
-              <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full border border-[#2D2D31] bg-[#1B1B1D]/85 px-2 py-0.5 backdrop-blur-sm">
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    freelancer.disponible
-                      ? "animate-pulse bg-emerald-400"
-                      : "bg-gray-500"
-                  }`}
-                />
-
-                <span className="text-[9px] font-semibold text-[#B8B8BE]">
-                  {freelancer.disponible ? "Disponible" : "Occupé"}
+              {/* Disponibilité */}
+              <div className="absolute top-2 right-2 flex items-center gap-1 bg-[#1e1e22]/80 backdrop-blur-sm border border-[#2a2a32] rounded-full px-2 py-0.5">
+                <span className={`w-1.5 h-1.5 rounded-full ${r.disponible ? "bg-emerald-400 animate-pulse" : "bg-gray-500"}`} />
+                <span className="text-[9px] font-semibold text-white/70">
+                  {r.disponible ? "Disponible" : "Occupé"}
                 </span>
               </div>
             </div>
 
+            {/* Contenu */}
             <div className="p-3.5">
-              <div className="mb-1.5 flex items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-2 mb-1.5">
                 <div>
-                  <h3 className="text-sm font-bold leading-tight text-white">
-                    {freelancer.prenom} {freelancer.nom.charAt(0)}.
+                  <h3 className="text-sm font-bold text-white leading-tight">
+                    {r.prenom} {r.nom.charAt(0)}.
                   </h3>
-
-                  <p className="mt-0.5 text-[10px] font-medium text-[#FF6257]">
-                    {freelancer.metier}
+                  <p className="text-[10px] text-[#FE6864] font-medium mt-0.5">
+                    {r.profil?.profession ?? "Artisan"}
                   </p>
                 </div>
-
-                <CheckCircle size={14} className="mt-0.5 text-[#FF6257]" />
+                <CheckCircle size={14} className="text-[#FE6864] shrink-0 mt-0.5" />
               </div>
 
+              {/* Note cliquable → commentaires */}
               <button
-                onClick={() => ouvrirCommentaires(freelancer)}
-                className="mb-3 flex items-center gap-2 text-[10px] text-[#B8B8BE] transition-opacity hover:opacity-80"
+                onClick={() => handleOpenComments(
+                  r.id_freelancer, 
+                  `${r.prenom} ${r.nom}`, 
+                  r.photo, 
+                  r.profil?.profession ?? "Artisan"
+                )}
+                className="flex items-center gap-2 text-[10px] text-white/50 mb-3 hover:opacity-80 transition-opacity"
               >
                 <div className="flex items-center gap-1">
-                  <Star size={10} className="fill-amber-400 text-amber-400" />
-
-                  <span className="font-semibold text-white">
-                    {freelancer.note}
-                  </span>
-
-                  <span className="hover:text-[#FF6257]">
-                    ({freelancer.avis})
-                  </span>
+                  <Star size={10} className="text-amber-400 fill-amber-400" />
+                  <span className="text-white font-semibold">{r.note}</span>
+                  <span className="hover:text-[#FE6864] transition-colors">({r.avis})</span>
                 </div>
-
                 <div className="flex items-center gap-1">
-                  <MapPin size={10} className="text-[#FF6257]" />
-                  <span>{freelancer.distance}</span>
+                  <MapPin size={10} className="text-[#FE6864]" />
+                  <span>{r.distance}</span>
                 </div>
               </button>
 
-              <button
-                onClick={() => setFreelancerSelectionne(freelancer)}
-                className="w-full rounded-xl border border-[#FF6257]/40 bg-[#FF6257]/10 px-3 py-2 text-[11px] font-bold text-[#FF6257] transition-colors hover:bg-[#FF6257] hover:text-white"
-              >
-                Consulter le profil
-              </button>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black text-white">
+                  À partir de <span className="text-[#FE6864]">{r.prix} FCFA</span>
+                </span>
+                <button
+                  onClick={() => handleOpenForm({
+                    photo: r.photo,
+                    nom: `${r.prenom} ${r.nom}`,
+                    metier: r.profil?.profession ?? "Artisan",
+                    note: r.note,
+                    avis: r.avis,
+                    verified: true,
+                    disponible: r.disponible,
+                  })}
+                  className="text-[10px] font-bold bg-[#FE686415] border border-[#FE686430] hover:bg-[#FE6864] text-[#FE6864] hover:text-white px-2.5 py-1 rounded-lg transition-all"
+                >
+                  Voir →
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
-      {freelancerSelectionne && (
-        <FreelancerDetailsModal
-          ouvert={true}
-          onClose={() => setFreelancerSelectionne(null)}
-          freelancer={{
-            photo: freelancerSelectionne.photo,
-            nom: `${freelancerSelectionne.prenom} ${freelancerSelectionne.nom}`,
-            metier: freelancerSelectionne.metier,
-            secteur: freelancerSelectionne.secteur,
-            description: freelancerSelectionne.description,
-            note: freelancerSelectionne.note,
-            avis: freelancerSelectionne.avis,
-            disponible: freelancerSelectionne.disponible,
-            verified: true,
-          }}
-          onVoirAvis={() => ouvrirCommentaires(freelancerSelectionne)}
-          onDemanderService={() => ouvrirFormulaire(freelancerSelectionne)}
-        />
-      )}
     </section>
   );
-}
-
-function obtenirNombreAvis(idFreelancer: number) {
-  return commentairesMock.filter(
-    (commentaire) => commentaire.id_freelancer === idFreelancer
-  ).length;
-}
-
-function obtenirNoteMoyenne(idFreelancer: number) {
-  const commentaires = commentairesMock.filter(
-    (commentaire) => commentaire.id_freelancer === idFreelancer
-  );
-
-  if (commentaires.length === 0) return 4.5;
-
-  const total = commentaires.reduce(
-    (somme, commentaire) => somme + obtenirNote(commentaire.id_commentaire),
-    0
-  );
-
-  return Number((total / commentaires.length).toFixed(1));
-}
-
-function obtenirNote(idCommentaire: number) {
-  const notes = [5, 4, 5, 3, 4, 2, 5, 4, 1, 5];
-
-  return notes[(idCommentaire - 1) % notes.length];
 }

@@ -9,6 +9,7 @@ import ScrollTop from "./Composant/ScrollTop";
 import Layout from "./Composant/Layout";
 
 // Admin
+import AccueilAdmin from "./Pages/Administrateur/Accueil";
 import Client from "./Pages/Administrateur/Client";
 import Freelancer from "./Pages/Administrateur/Freelancer";
 import CommentaireAvis from "./Pages/Administrateur/CommentaireAvis";
@@ -17,6 +18,7 @@ import DashboardAdmin from "./Pages/Administrateur/DashboardAdmin";
 
 // Client
 import AccueilClient from "./Pages/Client/Accueil";
+import CompteClient from "./Pages/Client/CompteClient";
 import ServicesClient from "./Pages/Client/ServicesClient";
 import MonCompte from "./Pages/Client/MonCompte";
 // Général
@@ -52,7 +54,8 @@ function AnimatedRoutes() {
         <Route path="/client" element={<AccueilClient />} />
         <Route path="/client/services" element={<ServicesClient />} />
         <Route path="/client/messagerie" element={<Messagerie />} />
-        <Route path="/client/compte" element={<MonCompte />} />
+        <Route path="/client/compte" element={<CompteClient />} />
+        <Route path="/MonCompte" element={<MonCompte />} />
 
         {/* Freelancer */}
         <Route path="/freelancer" element={<AccueilFreelancer />} />
@@ -68,7 +71,7 @@ function AnimatedRoutes() {
         />
 
         {/* Admin */}
-        <Route path="/administrateur" element={<DashboardAdmin />} />
+        <Route path="/administrateur" element={<AccueilAdmin />} />
         <Route path="/administrateur/clients" element={<Client />} />
         <Route path="/administrateur/freelancers" element={<Freelancer />} />
         <Route
@@ -76,6 +79,7 @@ function AnimatedRoutes() {
           element={<CommentaireAvis />}
         />
         <Route path="/administrateur/signales" element={<CompteSignal />} />
+        <Route path="/dashboardadmin" element={<DashboardAdmin />} />
       </Routes>
     </AnimatePresence>
   );

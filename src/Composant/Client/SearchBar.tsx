@@ -1,68 +1,64 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 
-import { profilsFreelancersMock } from "../../constants";
+const suggestions = [
+  "Plombier",
+  "Électricien",
+  "Peintre",
+  "Maçon",
+  "Menuisier",
+  "Soudeur",
+];
 
-const suggestions = Array.from(
-  new Set(
-    profilsFreelancersMock.map((profil) => profil.profession).filter(Boolean)
-  )
-);
+export default function SearchBar({ onSearch }: { onSearch?: (query: string) => void }) {
+  const [query, setQuery] = useState("");
+  const [focused, setFocused] = useState(false);
 
-export default function SearchBar({
-  onSearch,
-}: {
-  onSearch?: (query: string) => void;
-}) {
-  const [recherche, setRecherche] = useState("");
-  const [focus, setFocus] = useState(false);
-
-  const suggestionsFiltrees = suggestions.filter((suggestion) =>
-    suggestion.toLowerCase().includes(recherche.toLowerCase())
+  const filtered = suggestions.filter((s) =>
+    s.toLowerCase().includes(query.toLowerCase())
   );
 
-  function changerRecherche(valeur: string) {
-    setRecherche(valeur);
-    onSearch?.(valeur);
-  }
+  const handleSearch = (value: string) => {
+    setQuery(value);
+    onSearch?.(value);
+  };
 
   return (
     <div className="relative mb-6">
       <div
-        className={`flex items-center gap-3 rounded-2xl border-[#2D2D31] bg-[#1B1B1D] px-4 py-3 transition-all ${
-          focus
-            ? "border-[#FF6257] shadow-[0_0_0_3px_rgba(255,98,87,0.18)]"
-            : "border-[#2D2D31] hover:border-[#FF6257]/40"
+        className={`flex items-center gap-3 bg-[#24242c] border rounded-2xl px-4 py-3 transition-all duration-200 ${
+          focused
+            ? "border-[#FE6864] shadow-[0_0_0_3px_#FE686420]"
+            : "border-[#2a2a32] hover:border-[#3a3a42]"
         }`}
       >
-        <Search size={18} className="shrink-0 text-[#FF6257]" />
-
+        <Search size={18} className="text-[#FE6864] shrink-0" />
         <input
           type="text"
-          placeholder="Rechercher un service, un métier ou un freelancer..."
-          value={recherche}
-          onChange={(e) => changerRecherche(e.target.value)}
-          onFocus={() => setFocus(true)}
-          onBlur={() => setTimeout(() => setFocus(false), 150)}
-          className="flex-1 bg-transparent text-sm text-white outline-none placeholder:text-[#B8B8BE]/60"
+          placeholder="Rechercher un service, un artisan…"
+          value={query}
+          onChange={(e) => handleSearch(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setTimeout(() => setFocused(false), 150)}
+          className="flex-1 bg-transparent text-white text-sm placeholder-white/30 outline-none"
         />
-
-        <button className="flex items-center gap-1.5 rounded-xl border border-[#2D2D31] bg-[#1B1B1D] px-3 py-1.5 text-xs font-semibold text-[#B8B8BE] transition hover:border-[#FF6257]/40 hover:bg-[#FF6257]/10 hover:text-[#FF6257]">
+        <button className="flex items-center gap-1.5 bg-[#2a2a32] hover:bg-[#FE686415] border border-[#3a3a42] hover:border-[#FE686440] text-white/70 hover:text-[#FE6864] text-xs font-semibold px-3 py-1.5 rounded-xl transition-all">
           <SlidersHorizontal size={13} />
           <span className="hidden sm:inline">Filtres</span>
         </button>
       </div>
 
-      {focus && recherche.length > 0 && suggestionsFiltrees.length > 0 && (
-        <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-xl border border-[#2D2D31] bg-[#1B1B1D] shadow-[0_16px_40px_rgba(0,0,0,0.45)]">
-          {suggestionsFiltrees.map((suggestion) => (
+      {/* Autocomplete dropdown */}
+      {focused && query.length > 0 && filtered.length > 0 && (
+        <div className="absolute top-[calc(100%+6px)] left-0 right-0 bg-[#1e1e24] border border-[#2a2a32] rounded-xl shadow-[0_16px_40px_#00000070] z-50 overflow-hidden">
+          {filtered.map((s) => (
             <button
-              key={suggestion}
-              onMouseDown={() => changerRecherche(suggestion)}
-              className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-[#B8B8BE] transition hover:bg-[#FF6257]/10 hover:text-white"
+              key={s}
+              onMouseDown={() => handleSearch(s)}
+              className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/80 hover:text-white hover:bg-[#FE686410] text-left transition-colors"
             >
-              <Search size={13} className="text-[#FF6257]" />
-              {suggestion}
+              <Search size={13} className="text-[#FE6864]/60" />
+              {s}
             </button>
           ))}
         </div>
