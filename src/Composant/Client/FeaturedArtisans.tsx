@@ -2,20 +2,20 @@ import { ArrowRight, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import ArtisanCard from "./ArtisanCard";
 import { freelancersMock, profilsFreelancersMock, rangsMock } from "../../constants";
-import type {FeaturedArtisansProps} from "../../Type"
+import type { FeaturedArtisansProps } from "../../Type";
 
 // Données statiques complémentaires non présentes dans le mock
 const extras: Record<number, { note: number; avis: number; distance: string; prix: string; disponible: boolean }> = {
-  1: { note: 4.8, avis: 134,  distance: "3 km", prix: "5 000", disponible: true  },
-  2: { note: 4.6, avis: 98,   distance: "2 km", prix: "7 000", disponible: false },
-  3: { note: 4.7, avis: 88,   distance: "4 km", prix: "8 000", disponible: true  },
-  4: { note: 4.5, avis: 72,   distance: "5 km", prix: "6 000", disponible: true  },
-  5: { note: 4.9,  avis: 156,  distance: "1 km", prix: "4 500", disponible: true  },
-  6: { note: 4.4,  avis: 61,   distance: "6 km", prix: "9 000", disponible: false },
-  7: { note: 4.8,  avis: 112,  distance: "2 km", prix: "6 000", disponible: true  },
-  8: { note: 4.6,  avis: 79,   distance: "3 km", prix: "8 500", disponible: false },
-  9: { note: 4.9,  avis: 201,  distance: "1 km", prix: "5 500", disponible: true  },
-  10: { note: 4.7, avis: 95,  distance: "4 km", prix: "7 000", disponible: true  },
+  1: { note: 4.8, avis: 134, distance: "3 km", prix: "5 000", disponible: true  },
+  2: { note: 4.6, avis: 98,  distance: "2 km", prix: "7 000", disponible: false },
+  3: { note: 4.7, avis: 88,  distance: "4 km", prix: "8 000", disponible: true  },
+  4: { note: 4.5, avis: 72,  distance: "5 km", prix: "6 000", disponible: true  },
+  5: { note: 4.9, avis: 156, distance: "1 km", prix: "4 500", disponible: true  },
+  6: { note: 4.4, avis: 61,  distance: "6 km", prix: "9 000", disponible: false },
+  7: { note: 4.8, avis: 112, distance: "2 km", prix: "6 000", disponible: true  },
+  8: { note: 4.6, avis: 79,  distance: "3 km", prix: "8 500", disponible: false },
+  9: { note: 4.9, avis: 201, distance: "1 km", prix: "5 500", disponible: true  },
+  10: { note: 4.7, avis: 95, distance: "4 km", prix: "7 000", disponible: true  },
 };
 
 // Tous les artisans disponibles
@@ -39,14 +39,18 @@ const allArtisans = freelancersMock.map((f) => {
     secteur: profil?.secteur_activite ?? "",
     verified: true,
     badge,
-    ...extra,
+    prix: extra.prix,
+    note: extra.note,
+    avis: extra.avis,
+    distance: extra.distance,
+    disponible: extra.disponible,
   };
 });
-
 
 export default function FeaturedArtisans({ 
   searchQuery = "", 
   selectedCategory = null,
+  onOpenProfil,
   onOpenComments,
   onOpenForm,
 }: FeaturedArtisansProps) {
@@ -75,7 +79,7 @@ export default function FeaturedArtisans({
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-base md:text-lg font-bold text-white">
-            {searchQuery || selectedCategory ? "Résultats de recherche" : "Artisans vérifiés"}
+            {searchQuery || selectedCategory ? "Résultats de recherche" : "Prestataires vérifiés"}
           </h2>
           <p className="text-[11px] text-white/40 mt-0.5">
             {filteredArtisans.length} artisan{filteredArtisans.length > 1 ? 's' : ''} trouvé{filteredArtisans.length > 1 ? 's' : ''}
@@ -112,6 +116,7 @@ export default function FeaturedArtisans({
             <ArtisanCard 
               key={a.id} 
               {...a} 
+              onOpenProfil={onOpenProfil}
               onOpenComments={onOpenComments}
               onOpenForm={onOpenForm}
             />

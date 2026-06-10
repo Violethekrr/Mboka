@@ -1,5 +1,5 @@
-import { Star, MapPin, Clock, CheckCircle, MessageSquare } from "lucide-react";
-import type {ArtisanCardProps} from "../../Type"
+import { Star, MapPin, CheckCircle, MessageSquare } from "lucide-react";
+import type { ArtisanCardProps, ProfilArtisanDataType } from "../../Type";
 
 export default function ArtisanCard({
   id,
@@ -10,39 +10,48 @@ export default function ArtisanCard({
   note,
   avis,
   distance,
-  prix,
   disponible,
   verified,
   badge,
   id_freelancer,
-  onOpenComments,
-  onOpenForm,
+  onOpenProfil,
+  onOpenComments
 }: ArtisanCardProps) {
 
-  const handleOpenComments = () => {
+  const handleCardClick = () => {
+    if (onOpenProfil) {
+      const artisanData: ProfilArtisanDataType = {
+        id_freelancer: id_freelancer ?? id,
+        nom,
+        prenom,
+        photo,
+        metier,
+        note,
+        avis,
+        distance,
+        prix: "0", // À remplacer par la vraie valeur si disponible
+        disponible,
+        verified,
+        badge,
+      };
+      onOpenProfil(artisanData);
+    }
+  };
+
+  const handleOpenComments = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (onOpenComments) {
       onOpenComments(id_freelancer ?? id, `${prenom} ${nom}`, photo, metier);
     }
   };
 
-  const handleOpenForm = () => {
-    if (onOpenForm) {
-      onOpenForm({
-        photo,
-        nom: `${prenom} ${nom}`,
-        metier,
-        note,
-        avis,
-        verified,
-        disponible,
-      });
-    }
-  };
-
+  
   return (
     <>
-      <div className="group relative bg-[#24242c] border border-[#2a2a32] hover:border-[#FE686440] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_#FE686418] hover:-translate-y-0.5">
-
+      <div 
+        onClick={handleCardClick}
+        className="group relative bg-[#24242c] border border-[#2a2a32] hover:border-[#FE686440] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_#FE686418] hover:-translate-y-0.5 cursor-pointer"
+      >
         {/* Badge */}
         {badge && (
           <div className="absolute top-3 left-3 z-10">
@@ -98,28 +107,12 @@ export default function ArtisanCard({
             <MessageSquare size={10} className="text-white/20 group-hover/stars:text-[#FE6864] transition-colors ml-0.5" />
           </button>
 
-          {/* Distance + délai */}
-          <div className="flex items-center justify-between text-[10px] text-white/50 mb-3">
+          {/* Distance */}
+          <div className="flex items-center text-[10px] text-white/50 mb-3">
             <div className="flex items-center gap-1">
               <MapPin size={10} className="text-[#FE6864]" />
               <span>{distance}</span>
             </div>
-            <div className="flex items-center gap-1">
-              <Clock size={10} />
-              <span>Rapide</span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-black text-white">
-              À partir de <span className="text-[#FE6864]">{prix} FCFA</span>
-            </span>
-            <button
-              onClick={handleOpenForm}
-              className="text-[10px] font-bold bg-[#FE6864] hover:bg-[#e55a56] text-white px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap"
-            >
-              Contacter
-            </button>
           </div>
         </div>
       </div>
