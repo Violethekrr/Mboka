@@ -11,7 +11,7 @@ import Layout from "./Composant/Layout";
 // Admin
 
 import Client from "./Pages/Administrateur/Client";
-import Freelancer from "./Pages/Administrateur/Freelancer";
+import Freelancer from "./Pages/Administrateur/Freelancers";
 import CommentaireAvis from "./Pages/Administrateur/CommentaireAvis";
 import CompteSignal from "./Pages/Administrateur/CompteSignal";
 import DashboardAdmin from "./Pages/Administrateur/DashboardAdmin";

@@ -78,7 +78,7 @@ export default function AvisEtCommentaires() {
 
   return (
     <main className="min-h-screen bg-[#0f0f0f]  px-4 pb-10 pt-24 text-white md:px-8">
-      <div className="mx-auto max-w-7xl">
+      <div className="">
         <section className="mb-7">
           <p className="text-sm font-semibold text-[#FF6257]">
             Freelancer - Avis et commentaires

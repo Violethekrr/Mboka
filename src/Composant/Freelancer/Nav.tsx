@@ -58,7 +58,7 @@ export default function NavBar() {
   return (
     <nav className={`fixed top-0 left-0 w-full z-200 backdrop-blur-[14px] transition-all duration-300
       ${scrolled ? "bg-[#0f0f0f]  border-b border-[#2a2a32]" : "bg-[#0f0f0f]  border-b border-transparent"}`}>
-      <div className="max-w-350 mx-auto px-7 h-15.5 flex items-center gap-2">
+      <div className=" pr-4 h-15.5 flex items-center gap-2">
 
         {/* Logo */}
         <Link to="/client" className="no-underline flex items-center gap-2.5 mr-6">

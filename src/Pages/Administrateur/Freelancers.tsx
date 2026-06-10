@@ -1,25 +1,55 @@
 import { useState, useRef } from "react";
-import { Search, Download, Upload, User, Eye, Power, Trash2 } from "lucide-react";
+import { Search, Download, Upload, User, Eye, Power, Trash2, X } from "lucide-react";
 import { freelancersMock } from "../../constants";
 import type { Freelancers } from "../../Type";
 
-export default function Freelancer() {
+export default function Freelancers() {
+  const [freelancers, setFreelancers] = useState<Freelancers[]>(freelancersMock);
   const [searchTerm, setSearchTerm] = useState("");
-  const [freelancers] = useState<Freelancers[]>(freelancersMock);
+  const [selectedFreelancer, setSelectedFreelancer] = useState<Freelancers | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fonction pour déterminer un statut (exemple basé sur l'ID)
+  // Fonction pour déterminer un statut (simulé, basé sur l'ID)
   const getStatus = (id: number): "Actif" | "Suspendu" => {
     return id % 2 === 0 ? "Actif" : "Suspendu";
   };
 
+  // Filtrer par nom complet
   const filteredData = freelancers.filter((f) =>
     `${f.prenom} ${f.nom}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // --- Gestion des actions ---
+  const handleViewDetails = (freelancer: Freelancers) => {
+    setSelectedFreelancer(freelancer);
+    setIsModalOpen(true);
+  };
+
+  const handleToggleStatus = (id: number) => {
+    // On ne modifie pas vraiment le statut ici car il est calculé.
+    // Pour une vraie implémentation, il faudrait ajouter un champ `status` dans les données.
+    // On simule un changement d'état en inversant la logique de getStatus via un état local.
+    // Pour l'exemple, on va modifier un statut fictif en utilisant un Map.
+    // Comme le statut est calculé, on le transforme en champ stocké.
+    // On va créer un nouvel état avec un statut explicite.
+    // Pour simplifier, on affiche une alerte.
+    alert(`Changement de statut pour l'ID ${id} (non implémenté complètement).`);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Supprimer définitivement ce prestataire ?")) {
+      setFreelancers((prev) => prev.filter((f) => f.id_freelancer !== id));
+    }
+  };
+
+  // --- Import / Export ---
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) alert(`Fichier "${file.name}" importé avec succès.`);
+    if (file) {
+      alert(`Fichier "${file.name}" importé avec succès. (Simulation)`);
+      // Ici, on pourrait implémenter un vrai parsing CSV/JSON et ajouter les nouveaux freelancers
+    }
   };
 
   const handleExport = () => {
@@ -46,7 +76,7 @@ export default function Freelancer() {
   return (
     <div className="min-h-screen bg-[#0f0f0f] p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        {/* En-tête avec titre et actions */}
+        {/* En-tête */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <h1 className="text-white text-xl font-bold uppercase tracking-wider">
             Gestion des prestataires
@@ -79,7 +109,7 @@ export default function Freelancer() {
           </div>
         </div>
 
-        {/* Tableau des freelancers */}
+        {/* Tableau */}
         <div className="overflow-x-auto rounded-xl border border-[#2d2d31] bg-[#0f0f0f]">
           <table className="min-w-full">
             <thead>
@@ -87,8 +117,7 @@ export default function Freelancer() {
                 <th className="px-4 py-3 text-left text-xs font-medium text-[#8886BE] uppercase tracking-wider">Prestataire</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-[#8886BE] uppercase tracking-wider">Email</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-[#8886BE] uppercase tracking-wider">Téléphone</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#8886BE] uppercase tracking-wider">Inscrit le</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-[#8886BE] uppercase tracking-wider">Statut</th>
+                
                 <th className="px-4 py-3 text-right text-xs font-medium text-[#8886BE] uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -108,25 +137,28 @@ export default function Freelancer() {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-300">{f.email}</td>
                   <td className="px-4 py-3 text-sm text-gray-300">{f.Telephone}</td>
-                  <td className="px-4 py-3 text-sm text-gray-300">{f.date_creation}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      getStatus(f.id_freelancer) === "Actif"
-                        ? "bg-green-900/30 text-green-400 border border-green-800"
-                        : "bg-red-900/30 text-red-400 border border-red-800"
-                    }`}>
-                      {getStatus(f.id_freelancer)}
-                    </span>
-                  </td>
+               
                   <td className="px-4 py-3 whitespace-nowrap text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-1.5 rounded-md hover:bg-[#2d2d31] transition-colors" title="Voir détails">
+                      <button
+                        onClick={() => handleViewDetails(f)}
+                        className="p-1.5 rounded-md hover:bg-[#2d2d31] transition-colors"
+                        title="Voir détails"
+                      >
                         <Eye size={16} className="text-[#8886BE] hover:text-white" />
                       </button>
-                      <button className="p-1.5 rounded-md hover:bg-[#2d2d31] transition-colors" title="Changer statut">
+                      <button
+                        onClick={() => handleToggleStatus(f.id_freelancer)}
+                        className="p-1.5 rounded-md hover:bg-[#2d2d31] transition-colors"
+                        title="Suspendre / Activer"
+                      >
                         <Power size={16} className="text-[#8886BE] hover:text-yellow-400" />
                       </button>
-                      <button className="p-1.5 rounded-md hover:bg-[#2d2d31] transition-colors" title="Supprimer">
+                      <button
+                        onClick={() => handleDelete(f.id_freelancer)}
+                        className="p-1.5 rounded-md hover:bg-[#2d2d31] transition-colors"
+                        title="Supprimer"
+                      >
                         <Trash2 size={16} className="text-[#8886BE] hover:text-red-400" />
                       </button>
                     </div>
@@ -143,6 +175,44 @@ export default function Freelancer() {
           </div>
         )}
       </div>
+
+      {/* Modal Détails */}
+      {isModalOpen && selectedFreelancer && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#1B1B1D] rounded-xl max-w-md w-full border border-[#2d2d31] shadow-2xl">
+            <div className="flex justify-between items-center p-4 border-b border-[#2d2d31]">
+              <h2 className="text-white font-bold">Détails du prestataire</h2>
+              <button onClick={() => setIsModalOpen(false)} className="text-[#8886BE] hover:text-white">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label className="text-xs text-[#8886BE] uppercase">Nom complet</label>
+                <p className="text-white">{selectedFreelancer.prenom} {selectedFreelancer.nom}</p>
+              </div>
+              <div>
+                <label className="text-xs text-[#8886BE] uppercase">Email</label>
+                <p className="text-white">{selectedFreelancer.email}</p>
+              </div>
+              <div>
+                <label className="text-xs text-[#8886BE] uppercase">Téléphone</label>
+                <p className="text-white">{selectedFreelancer.Telephone}</p>
+              </div>
+              
+            
+            </div>
+            <div className="p-4 border-t border-[#2d2d31] flex justify-end">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="bg-[#FF6257] hover:bg-[#E04D4D] text-white px-4 py-2 rounded-lg text-sm"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

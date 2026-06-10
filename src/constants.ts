@@ -18,7 +18,7 @@ export const clientsMock: Clients[] = [
     email: "william@gmail.com",
     Telephone: "066123456",
     photo: "https://picsum.photos/200",
-    mot_de_passe: "William123",
+    mot_de_passe: "123",
     date_creation: "2026-06-06",
   },
   {
@@ -122,7 +122,7 @@ export const freelancersMock: Freelancers[] = [
     email: "jean@gmail.com",
     Telephone: "066654321",
     photo: "https://picsum.photos/201",
-    mot_de_passe: "Jean123",
+    mot_de_passe: "123",
     date_creation: "2026-06-06",
   },
   {
@@ -223,7 +223,7 @@ export const administrateursMock: Administrateur[] = [
     id_admin: 1,
     nom: "Admin Principal",
     email: "admin@gmail.com",
-    mot_de_passe: "Admin123",
+    mot_de_passe: "123",
   },
   {
     id_admin: 2,

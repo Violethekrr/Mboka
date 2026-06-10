@@ -136,9 +136,27 @@ const ChatArea = ({
   onBack 
 }: ChatAreaProps) => {
   const endRef = useRef<HTMLDivElement>(null);
+  // Nombre de messages au dernier rendu — sert à détecter un NOUVEAU message
+  // sans scroller au chargement initial ni au changement de conversation.
+  const prevCountRef = useRef<number>(activeConv.messages.length);
+  const isFirstRenderRef = useRef(true);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    const currentCount = activeConv.messages.length;
+
+    if (isFirstRenderRef.current) {
+      // Premier rendu de ce chat : on se positionne sans animation
+      // pour ne pas perturber la lecture, mais on NE scroll PAS automatiquement.
+      isFirstRenderRef.current = false;
+      prevCountRef.current = currentCount;
+      return;
+    }
+
+    // Un nouveau message a été ajouté → on scroll vers le bas
+    if (currentCount > prevCountRef.current) {
+      endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+    prevCountRef.current = currentCount;
   }, [activeConv.messages]);
 
   return (
