@@ -47,7 +47,7 @@ const ConversationsList = ({
   );
 
   return (
-    <div className="w-full lg:w-75  border-white/10 bg-[#202023]  lg:border-r  flex flex-col h-full">
+    <div className="w-full lg:w-75  border-white/10 bg-[#0f0f0f]   lg:border-r  flex flex-col h-full">
       {/* Header sidebar */}
       <div className="p-5 pb-3.5">
         <div className="flex justify-between items-center mb-3.5">
@@ -142,9 +142,9 @@ const ChatArea = ({
   }, [activeConv.messages]);
 
   return (
-    <div className="flex-1 flex flex-col bg-[#16161a] h-full ">
+    <div className="flex-1 flex flex-col bg-[#0f0f0f]  h-full ">
       {/* Header chat */}
-      <div className="py-3.5 px-5 border-b  border-white/10 bg-[#202023]  flex items-center gap-3">
+      <div className="py-3.5 px-5 border-b  border-white/10 bg-[#0f0f0f]   flex items-center gap-3">
         {/* Bouton retour mobile */}
         <button 
           onClick={onBack}
@@ -267,7 +267,7 @@ const ChatArea = ({
       </div>
 
       {/* Input */}
-      <div className="py-3.5 px-5 border-t  border-white/10 bg-[#202023]  flex gap-2.5 items-center">
+      <div className="py-3.5 px-5 border-t  border-white/10 bg-[#0f0f0f]   flex gap-2.5 items-center">
         <input
           value={input}
           onChange={e => setInput(e.target.value)}

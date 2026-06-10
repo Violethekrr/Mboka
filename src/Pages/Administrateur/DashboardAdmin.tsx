@@ -157,10 +157,10 @@ export default function DashboardAdmin() {
     .slice(0, 4);
 
   return (
-    <main className="min-h-screen bg-[#111113] px-4 pb-10 pt-24 text-white md:px-6 lg:px-8">
+    <main className="min-h-screen bg-[#0f0f0f]  px-4 pb-10 pt-5 text-white md:px-6 lg:px-8">
       <section className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-sm font-semibold text-[#FF6257]">
+          <p className="text-sm font-semibold text-[#FF6257] ml-7">
             Admin - Dashboard
           </p>
 

@@ -26,7 +26,7 @@ export default function Layout({ children } : Props) {
     <div className="min-h-screen flex flex-col ">
         {!hiddenNav && <Nav/>}
         
-        <main>{children}</main>
+        <main className=''>{children}</main>
         {!hiddenFooter && <Foot/>}
     </div>
   )

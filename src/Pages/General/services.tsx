@@ -41,7 +41,7 @@ return (
 
 
 
-    <div className="min-h-screen bg-[#0f0f0f] p-4 lg:p-10 text-white">
+    <div className="min-h-screen bg-[#0f0f0f] p-4 lg:p-10 lg:pt-17 text-white  relative">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-8 h-8 rounded-full bg-[#E53E3E] flex items-center justify-center font-bold text-sm">5</div>

@@ -22,7 +22,7 @@ export default function FooterBar() {
   ];
 
   return (
-    <footer className="bg-[#111114] border-t border-[#2a2a32] py-7 px-8 pb-5">
+    <footer className="bg-[#0f0f0f] border-t border-[#2a2a32] py-7 px-8 pb-5">
       <div className="max-w-350 mx-auto">
         <div className="flex justify-between items-start flex-wrap gap-6 mb-6">
           <div>

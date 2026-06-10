@@ -92,7 +92,7 @@ export default function MonCompte() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] p-4 lg:p-10 text-white">
+    <div className=" bg-[#0f0f0f] p-4 lg:p-10 lg:pt-17 text-white">
       <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageChange} />
       
       <div className="max-w-5xl mx-auto bg-[#1a1a1a] rounded-3xl border border-white/5 p-6 lg:p-8">

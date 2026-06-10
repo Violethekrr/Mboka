@@ -260,11 +260,11 @@ export default function CompteSignale() {
   };
 
   return (
-    <div className="min-h-screen bg-[#111116] font-sans text-white flex">
+    <div className="min-h-screen bg-[#0f0f0f]  font-sans text-white flex">
       <div className="flex-1 flex flex-col min-h-screen transition-[margin] duration-[0.25s]">
 
         {/* Top bar */}
-        <div className="bg-[#16161c] py-2 w-full border-b border-[#22222c] px-7 ml-auto  h-auto grid grid-cols-1 sm:flex items-center gap-3 sticky top-0 z-100">
+        <div className="bg-[#0f0f0f]  py-2 w-full border-b border-[#22222c] px-7 ml-auto  h-auto grid grid-cols-1 sm:flex items-center gap-3 sticky top-0 z-100">
           <h1 className={`text-nowrap sm:mx-[5%] ml-auto ${TEXT.head}  font-extrabold text-white`}>Comptes Signalés</h1>
           <div className=" w-full ml-5 sm:ml-auto justify-end flex items-center  gap-2.5">
             <div className="relative">
@@ -515,7 +515,7 @@ export default function CompteSignale() {
                   <motion.div
                     key={sig.id_signalement}
                     layout
-                    className="bg-[#1A1A22] border border-[#2A2A35] rounded-2xl p-5 space-y-4 hover:border-[#FE686450] transition-all"
+                    className="border-[#2D2D31] bg-[#1B1B1D]  border rounded-2xl p-5 space-y-4 hover:border-[#FE686450] transition-all"
                   >
                     {/* Header */}
                     <div className="flex justify-between items-start">

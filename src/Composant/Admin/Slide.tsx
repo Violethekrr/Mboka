@@ -99,15 +99,15 @@ export default function AdminSidebar() {
               duration: 0.25,
               ease: [0.4, 0, 0.2, 1],
             }}
-            className="fixed top-0 left-0 h-screen w-62 z-250 bg-[#111116] border-r border-[#1e1e26] flex flex-col shadow-[6px_0_40px_#00000060]"
+            className="fixed top-0 left-0 h-screen w-62 z-250 bg-[#0f0f0f]  border-r border-[#1e1e26] flex flex-col shadow-[6px_0_40px_#00000060]"
           >
             {/* Header */}
-            <div className="px-4 pt-4.5 pb-4 border-b border-[#1e1e26] flex items-center justify-between">
+            <div className=" border-b border-[#1e1e26] flex items-center justify-between">
               <Link
                 to="/administrateur"
                 className="flex items-center gap-2.5 no-underline"
               >
-                <div className="w-25 h-25 rounded-xl  flex items-center justify-center font-black text-white">
+                <div className="w-22 h-22 rounded-xl  flex items-center justify-center font-black text-white">
                  <img src="/MbokaSansFond2.png" alt="Logo" className="w-25 h-25  p-1" />
                 </div>
       

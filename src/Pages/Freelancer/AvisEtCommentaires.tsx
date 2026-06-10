@@ -77,7 +77,7 @@ export default function AvisEtCommentaires() {
   }
 
   return (
-    <main className="min-h-screen bg-[#111113] px-4 pb-10 pt-24 text-white md:px-8">
+    <main className="min-h-screen bg-[#0f0f0f]  px-4 pb-10 pt-24 text-white md:px-8">
       <div className="mx-auto max-w-7xl">
         <section className="mb-7">
           <p className="text-sm font-semibold text-[#FF6257]">

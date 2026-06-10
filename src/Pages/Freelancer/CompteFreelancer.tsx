@@ -71,7 +71,7 @@ export default function CompteFreelancer() {
   }
 
   return (
-    <main className="min-h-screen bg-[#111113] px-4 pb-10 pt-24 text-white md:px-8">
+    <main className="min-h-screen bg-[#0f0f0f]  px-4 pb-10 pt-24 text-white md:px-8">
       <div className="mx-auto max-w-7xl">
         <section className="mb-6 rounded-2xl border border-white/10 bg-[#1B1B1D] p-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">

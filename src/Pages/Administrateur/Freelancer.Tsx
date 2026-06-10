@@ -52,8 +52,8 @@ export default function Freelancer() {
   };
 
   return (
-    <div className="min-h-screen bg-[#181810] p-4 md:p-6 text-[#8886BE]">
-      <div className="max-w-6xl mx-auto bg-[#1b1b1d] border border-[#2d2d31] rounded-xl shadow-2xl">
+    <div className="min-h-screen bg-[#0f0f0f]  p-4 md:p-6 text-[#8886BE]">
+      <div className="max-w-6xl mx-auto bg-[#0f0f0f]  border border-[#2d2d31] rounded-xl shadow-2xl">
         
         <div className="p-6 border-b border-[#2d2d31] flex flex-col md:flex-row justify-between items-center gap-4">
           <h1 className="text-white font-bold uppercase tracking-wider flex items-center gap-3">
@@ -63,7 +63,7 @@ export default function Freelancer() {
           
           <div className="flex gap-2 w-full md:w-auto">
             <div className="relative grow">
-              <Search className="absolute left-3 top-2.5 text-[#8886BE]" size={16} />
+              <Search className="absolute left-3 top-2.5 " size={16} />
               <input 
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Rechercher par nom..." 

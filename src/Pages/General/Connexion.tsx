@@ -7,11 +7,13 @@ import {
   administrateursMock,
 } from "../../constants";
 import logo from "../../assets/Mboka.png";
+import { useUser } from "../../Context/UtilisateurContext";
 export default function Connexion() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const {setUser,setRole}= useUser()
 
   const handleSubmit = (e: React.FormEvent) => {
   e.preventDefault();
@@ -29,10 +31,17 @@ export default function Connexion() {
   );
 
   if (client) {
+    setRole('client')
+    setUser(client)
     navigate("/client");
+    
   } else if (freelancer) {
+    setRole('freelancer')
+    setUser(freelancer)
     navigate("/Freelancer");
   } else if (admin) {
+    setRole('admin')
+    setUser(admin)
     navigate("/Administrateur");
   } else {
     alert("Identifiants incorrects");
