@@ -21,7 +21,6 @@ import AccueilClient from "./Pages/Client/Accueil";
 import CompteClient from "./Pages/Client/CompteClient";
 import ServicesClient from "./Pages/Client/ServicesClient";
 import MonCompte from "./Pages/Client/MonCompte";
-
 // Général
 import Messagerie from "./Pages/General/Messagerie";
 import Connexion from "./Pages/General/Connexion";
