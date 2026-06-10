@@ -1,807 +1,1116 @@
-import React, { useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import {
-  Search,
+  AlertTriangle,
+  Calendar,
   Download,
   Eye,
+  Mail,
   MoreVertical,
-  X,
-  Users,
-  UserCheck,
-  UserX,
+  Phone,
+  Search,
   ShieldAlert,
+  ShoppingBag,
+  Trash2,
+  UserCheck,
+  Users,
+  UserX,
+  Wallet,
+  X,
 } from "lucide-react";
 
-type ClientType = {
-  id: number;
-  photo: string;
-  nom: string;
-  email: string;
-  telephone: string;
-  statut: string;
-  inscription: string;
-  commandes: number;
-  depenses: string;
-  avertissements: string[];
-};
+import type { Avertissements, Clients } from "../../Type";
 
+import {
+  avertissementsMock,
+  clientsMock,
+  paiementsMock,
+  servicesMock,
+  signalementsMock,
+  walletsMock,
+} from "../../constants";
+
+type StatutClient = "Actif" | "Sous surveillance" | "Suspendu" | "Bloqué";
 
 export default function Client() {
-const [selectedClient, setSelectedClient] = useState<ClientType | null>(null);
-  const [openMenu, setOpenMenu] = useState<number | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [clientToDelete, setClientToDelete] =
-  useState<ClientType | null>(null);
-  const [warningClient, setWarningClient] =
-  useState<ClientType | null>(null);
+  const [clients, setClients] = useState<Clients[]>(clientsMock);
+  const [recherche, setRecherche] = useState("");
+  const [menuOuvert, setMenuOuvert] = useState<number | null>(null);
 
-const [warningMessage, setWarningMessage] =
-  useState("");
-  const [orderClient, setOrderClient] =
-  useState<ClientType | null>(null);
-
-  const [clientsData, setClientsData] = useState<ClientType[]>([
-    {
-      id: 1,
-      photo: "https://i.pravatar.cc/150?img=1",
-      nom: "Alain Dev",
-      email: "alain.dev@gmail.com",
-      telephone: "+243 81 123 45 67",
-      statut: "Actif",
-      inscription: "12 Mai 2025",
-      commandes: 25,
-      depenses: "$450",
-      avertissements: ["Aucun avertissement"],
-    },
-    {
-      id: 2,
-      photo: "https://i.pravatar.cc/150?img=1",
-      nom: "Marie L.",
-      email: "marie@gmail.com",
-      telephone: "+243 99 456 78 90",
-      statut: "Sous surveillance",
-      inscription: "03 Avril 2025",
-      commandes: 12,
-      depenses: "$210",
-      avertissements: [
-        "Retard de paiement",
-        "Signalement reçu",
-      ],
-    },
-    {
-      id: 3,
-      photo: "https://i.pravatar.cc/150?img=1",
-      nom: "Paul T.",
-      email: "paul@gmail.com",
-      telephone: "+243 81 000 00 00",
-      statut: "Suspendu",
-      inscription: "22 Mars 2025",
-      commandes: 8,
-      depenses: "$95",
-      avertissements: [
-        "Comportement inapproprié",
-      ],
-    },
-    {
-      id: 4,
-      photo: "https://i.pravatar.cc/150?img=1",
-      nom: "Jean M.",
-      email: "jean@gmail.com",
-      telephone: "+243 82 555 66 77",
-      statut: "Bloqué",
-      inscription: "10 Février 2025",
-      commandes: 4,
-      depenses: "$30",
-      avertissements: [
-        "Fraude détectée",
-        "Compte bloqué",
-      ],
-    },
-  ]);
-
-  const stats = [
-    {
-      title: "Clients",
-      value: "1245",
-      icon: <Users size={22} />,
-    },
-    {
-      title: "Actifs",
-      value: "1102",
-      icon: <UserCheck size={22} />,
-    },
-    {
-      title: "Suspendus",
-      value: "98",
-      icon: <ShieldAlert size={22} />,
-    },
-    {
-      title: "Bloqués",
-      value: "45",
-      icon: <UserX size={22} />,
-    },
-  ];
-
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case "Actif":
-        return "bg-green-500/20 text-green-400 border border-green-500/20";
-
-      case "Sous surveillance":
-        return "bg-yellow-500/20 text-yellow-400 border border-yellow-500/20";
-
-      case "Suspendu":
-        return "bg-orange-500/20 text-orange-400 border border-orange-500/20";
-
-      default:
-        return "bg-red-500/20 text-red-400 border border-red-500/20";
-    }
-  };
-
-  const updateStatus = (
-  id: number,
-  newStatus: string
-) => {
-  setClientsData(
-    clientsData.map((client) =>
-      client.id === id
-        ? { ...client, statut: newStatus }
-        : client
-    )
+  const [clientSelectionne, setClientSelectionne] = useState<Clients | null>(
+    null
   );
-};
+  const [imageSelectionnee, setImageSelectionnee] = useState<string | null>(
+    null
+  );
+  const [clientASupprimer, setClientASupprimer] = useState<Clients | null>(
+    null
+  );
+  const [clientAvertir, setClientAvertir] = useState<Clients | null>(null);
+  const [messageAvertissement, setMessageAvertissement] = useState("");
+  const [clientCommandes, setClientCommandes] = useState<Clients | null>(null);
 
-const exportClients = () => {
-  const headers = [
-    "Nom",
-    "Email",
-    "Téléphone",
-    "Statut",
-    "Inscription",
-    "Commandes",
-    "Dépenses",
+  const [avertissements, setAvertissements] =
+    useState<Avertissements[]>(avertissementsMock);
+
+  const [statutsModifies, setStatutsModifies] = useState<
+    Record<number, StatutClient>
+  >({});
+
+  const clientsFiltres = useMemo(() => {
+    const texte = recherche.toLowerCase();
+
+    return clients.filter((client) => {
+      const nomComplet = `${client.prenom} ${client.nom}`.toLowerCase();
+
+      return (
+        nomComplet.includes(texte) ||
+        client.email.toLowerCase().includes(texte) ||
+        client.Telephone.toLowerCase().includes(texte)
+      );
+    });
+  }, [clients, recherche]);
+
+  const statistiques = [
+    {
+      titre: "Clients",
+      valeur: clients.length,
+      icone: <Users size={20} />,
+    },
+    {
+      titre: "Actifs",
+      valeur: clients.filter((client) => obtenirStatutClient(client) === "Actif")
+        .length,
+      icone: <UserCheck size={20} />,
+    },
+    {
+      titre: "Suspendus",
+      valeur: clients.filter(
+        (client) => obtenirStatutClient(client) === "Suspendu"
+      ).length,
+      icone: <ShieldAlert size={20} />,
+    },
+    {
+      titre: "Bloqués",
+      valeur: clients.filter((client) => obtenirStatutClient(client) === "Bloqué")
+        .length,
+      icone: <UserX size={20} />,
+    },
   ];
 
-  const rows = clientsData.map((client) => [
-    client.nom,
-    client.email,
-    client.telephone,
-    client.statut,
-    client.inscription,
-    client.commandes,
-    client.depenses,
-  ]);
+  function obtenirStatutClient(client: Clients): StatutClient {
+    if (statutsModifies[client.id_client]) {
+      return statutsModifies[client.id_client];
+    }
 
-  const csvContent = [
-    headers.join(","),
-    ...rows.map((row) => row.join(",")),
-  ].join("\n");
+    const nombreAvertissements = obtenirAvertissementsClient(
+      client.id_client
+    ).length;
 
-  const blob = new Blob([csvContent], {
-    type: "text/csv;charset=utf-8;",
-  });
+    const nombreSignalements = obtenirSignalementsClient(client.id_client).length;
 
-  const url = URL.createObjectURL(blob);
+    if (nombreSignalements >= 2) return "Suspendu";
+    if (nombreAvertissements > 0 || nombreSignalements > 0) {
+      return "Sous surveillance";
+    }
 
-  const link = document.createElement("a");
+    return "Actif";
+  }
 
-  link.href = url;
-  link.download = `clients-${new Date()
-    .toISOString()
-    .split("T")[0]}.csv`;
+  function modifierStatut(idClient: number, statut: StatutClient) {
+    setStatutsModifies((anciensStatuts) => ({
+      ...anciensStatuts,
+      [idClient]: statut,
+    }));
+  }
 
-  link.click();
+  function obtenirServicesClient(idClient: number) {
+    return servicesMock.filter((service) => service.id_client === idClient);
+  }
 
-  URL.revokeObjectURL(url);
-};
+  function obtenirDepensesClient(idClient: number) {
+    return paiementsMock
+      .filter((paiement) => paiement.id_client === idClient)
+      .reduce((total, paiement) => total + paiement.montant_ajoute, 0);
+  }
 
-  const filteredClients = clientsData.filter((client) =>
-  client.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  client.email.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  function obtenirWalletClient(idClient: number) {
+    return walletsMock.find((wallet) => wallet.id_client === idClient);
+  }
+
+  function obtenirAvertissementsClient(idClient: number) {
+    return avertissements.filter(
+      (avertissement) => avertissement.id_client === idClient
+    );
+  }
+
+  function obtenirSignalementsClient(idClient: number) {
+    return signalementsMock.filter(
+      (signalement) =>
+        signalement.signaleur_type === "freelancer" &&
+        signalement.id_signalé === idClient
+    );
+  }
+
+  function exporterClients() {
+    const lignes = clients.map((client) => {
+      const statut = obtenirStatutClient(client);
+      const commandes = obtenirServicesClient(client.id_client).length;
+      const depenses = obtenirDepensesClient(client.id_client);
+
+      return [
+        `${client.prenom} ${client.nom}`,
+        client.email,
+        client.Telephone,
+        statut,
+        client.date_creation,
+        commandes,
+        depenses,
+      ];
+    });
+
+    const contenuCsv = [
+      [
+        "Nom",
+        "Email",
+        "Téléphone",
+        "Statut",
+        "Inscription",
+        "Commandes",
+        "Dépenses",
+      ].join(","),
+      ...lignes.map((ligne) => ligne.join(",")),
+    ].join("\n");
+
+    const blob = new Blob([contenuCsv], {
+      type: "text/csv;charset=utf-8;",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const lien = document.createElement("a");
+
+    lien.href = url;
+    lien.download = `clients-${new Date().toISOString().split("T")[0]}.csv`;
+    lien.click();
+
+    URL.revokeObjectURL(url);
+  }
+
+  function supprimerClient() {
+    if (!clientASupprimer) return;
+
+    setClients((anciensClients) =>
+      anciensClients.filter(
+        (client) => client.id_client !== clientASupprimer.id_client
+      )
+    );
+
+    setClientASupprimer(null);
+  }
+
+  function envoyerAvertissement() {
+    if (!clientAvertir || !messageAvertissement.trim()) return;
+
+    const nouvelAvertissement: Avertissements = {
+      id_avertissement: Date.now(),
+      id_client: clientAvertir.id_client,
+      id_freelancer: null,
+      id_admin: 1,
+      contenu_avertissement: messageAvertissement,
+    };
+
+    setAvertissements((anciensAvertissements) => [
+      nouvelAvertissement,
+      ...anciensAvertissements,
+    ]);
+
+    setMessageAvertissement("");
+    setClientAvertir(null);
+  }
 
   return (
-    <div className="min-h-screen bg-[#070B14] text-white p-4 md:p-6">
+    <main className="min-h-screen bg-[#111113] px-4 pb-10 pt-24 text-white md:px-6 lg:px-8">
+      <section className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-[#FF6257]">
+            Admin - Gestion clients
+          </p>
 
-      {/* Recherche + Export */}
+          <h1 className="mt-2 text-2xl font-bold md:text-3xl">Clients</h1>
 
- {/* Header */}
-<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <p className="mt-1 text-sm text-[#B8B8BE]">
+            Suivez les comptes clients, leurs commandes, leurs paiements et les
+            avertissements.
+          </p>
+        </div>
 
-  {/* Search */}
-  <div className="relative w-full md:max-w-md pl-14">
-    <Search
-      size={18}
-      className="absolute left-17 top-1/2 -translate-y-1/2 text-gray-400"
-    />
+        <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+          <div className="relative w-full lg:w-80">
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-[#B8B8BE]"
+            />
 
-    <input
-      type="text"
-      placeholder="Rechercher un client"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="w-full bg-[#111827] border border-[#1f2937] text-gray-200 rounded-xl pl-10 pr-4 py-2.5 outline-none focus:border-red-500 transition"
-    />
-  </div>
-
-  {/* Right buttons */}
-  <div className="flex items-center gap-3">
-
-    {/* Export button */}
-    <button
-      onClick={exportClients}
-      className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[#2a3441] text-gray-300 hover:bg-[#111c2e] transition"
-    >
-      <Download size={16} />
-      Exporter
-    </button>
-
-  </div>
-
-</div>
-
-      {/* Statistiques */}
-
-      <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8 cursor-pointer transition-all duration-300 hover:-translate-y-1 ">
-
-        {stats.map((item, index) => (
-          <div
-            key={index}
-            className="bg-[#0D1321] border border-[#1A2233] rounded-2xl p-4 cursor-pointer transition-all duration-200 ease-out hover:border-red-500/40 hover:bg-[#101827]"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-slate-400">
-                {item.title}
-              </span>
-
-              <div className="text-[#FF5B57]">
-                {item.icon}
-              </div>
-            </div>
-
-            <h2 className="text-3xl font-bold">
-              {item.value}
-            </h2>
+            <input
+              value={recherche}
+              onChange={(e) => setRecherche(e.target.value)}
+              placeholder="Rechercher un client..."
+              className="w-full rounded-xl border border-[#2D2D31] bg-[#1B1B1D] py-3 pl-11 pr-4 text-sm text-white outline-none placeholder:text-[#B8B8BE]/60 transition focus:border-[#FF6257]"
+            />
           </div>
+
+          <button
+            onClick={exporterClients}
+            className="flex items-center justify-center gap-2 rounded-xl border border-[#2D2D31] bg-[#1B1B1D] px-4 py-3 text-sm font-semibold text-[#B8B8BE] transition hover:border-[#FF6257]/40 hover:text-white"
+          >
+            <Download size={16} />
+            Exporter
+          </button>
+        </div>
+      </section>
+
+      <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {statistiques.map((item) => (
+          <CarteStatistique
+            key={item.titre}
+            titre={item.titre}
+            valeur={item.valeur}
+            icone={item.icone}
+          />
         ))}
+      </section>
 
-      </div>
+      <section className="space-y-3 md:hidden">
+        {clientsFiltres.length === 0 && (
+          <MessageVide texte="Aucun client trouvé." />
+        )}
 
-      {/* Tableau */}
+        {clientsFiltres.map((client) => (
+          <CarteClientMobile
+            key={client.id_client}
+            client={client}
+            statut={obtenirStatutClient(client)}
+            commandes={obtenirServicesClient(client.id_client).length}
+            depenses={obtenirDepensesClient(client.id_client)}
+            getStatusClass={getStatusClass}
+            menuOuvert={menuOuvert}
+            setMenuOuvert={setMenuOuvert}
+            setClientSelectionne={setClientSelectionne}
+            setImageSelectionnee={setImageSelectionnee}
+            modifierStatut={modifierStatut}
+            setClientCommandes={setClientCommandes}
+            setClientAvertir={setClientAvertir}
+            setClientASupprimer={setClientASupprimer}
+          />
+        ))}
+      </section>
 
-      <div className="bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden">
-
+      <section className="hidden overflow-hidden rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] md:block">
         <div className="overflow-x-auto">
-
-          <table className="w-full min-w-[850px]">
+          <table className="w-full min-w-[900px]">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-400">
-                <th className="text-left px-6 py-4">Client</th>
-                <th className="text-left px-6 py-4">Email</th>
-                <th className="text-left px-6 py-4">Téléphone</th>
-                <th className="text-left px-6 py-4">Statut</th>
-                <th className="text-center px-6 py-4">Actions</th>
+              <tr className="border-b border-[#2D2D31] text-sm text-[#B8B8BE]">
+                <th className="px-6 py-4 text-left font-semibold">Client</th>
+                <th className="px-6 py-4 text-left font-semibold">Email</th>
+                <th className="px-6 py-4 text-left font-semibold">
+                  Téléphone
+                </th>
+                <th className="px-6 py-4 text-left font-semibold">
+                  Commandes
+                </th>
+                <th className="px-6 py-4 text-left font-semibold">Statut</th>
+                <th className="px-6 py-4 text-center font-semibold">
+                  Actions
+                </th>
               </tr>
             </thead>
 
-            {filteredClients.length === 0 && (
-  <div className="text-center py-8 text-slate-400">
-    Aucun résultat trouvé
-  </div>
-)}
-
             <tbody>
-                            {filteredClients.map((client) => (
-                <tr
-                  key={client.id}
-                  className="border-b border-slate-800 hover:bg-slate-800/30 transition"
-                >
-                  {/* Client */}
-
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-
-<img
-  src={client.photo}
-  alt={client.nom}
-  onClick={() => setSelectedImage(client.photo)}
-  className="h-11 w-11 rounded-full object-cover border border-slate-700 cursor-pointer hover:scale-110 hover:ring-2 hover:ring-[#FF5B57] transition"
-/>
-
-                      <div>
-                        <p className="font-medium text-white">
-                          {client.nom}
-                        </p>
-
-                        <p className="text-xs text-slate-400">
-                          Client Mboka
-                        </p>
-                      </div>
-
-                    </div>
-                  </td>
-
-                  {/* Email */}
-
-                  <td className="px-6 py-4 text-slate-300">
-                    {client.email}
-                  </td>
-
-                  {/* Téléphone */}
-
-                  <td className="px-6 py-4 text-slate-300">
-                    {client.telephone}
-                  </td>
-
-                  {/* Statut */}
-
-                  <td className="px-6 py-4">
-
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusClass(
-                        client.statut
-                      )}`}
-                    >
-                      {client.statut === "Actif" && "🟢 Actif"}
-                      {client.statut === "Sous surveillance" &&
-                        "🟡 Sous surveillance"}
-                      {client.statut === "Suspendu" &&
-                        "🟠 Suspendu"}
-                      {client.statut === "Bloqué" &&
-                        "🔴 Bloqué"}
-                    </span>
-
-                  </td>
-
-                  {/* Actions */}
-
-                  <td className="px-6 py-4">
-
-                    <div className="flex justify-center gap-2 relative">
-
-                      {/* Voir */}
-
-                   <button
-  onClick={() => setSelectedClient(client)}
-  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-red-500/30 text-red-400 bg-red-500/5 hover:bg-red-500/10 hover:border-red-500 hover:shadow-lg hover:shadow-red-500/10 transition-all duration-300"
->
-  <Eye size={16} />
-  <span className="font-medium">Voir</span>
-</button>
-
-                      {/* Menu */}
-
-                      <button
-                        onClick={() =>
-                          setOpenMenu(
-                            openMenu === client.id
-                              ? null
-                              : client.id
-                          )
-                        }
-                        className="p-2 rounded-lg bg-slate-700 hover:bg-slate-600 transition"
-                      >
-                        <MoreVertical size={18} />
-                      </button>
-
-                      {/* Dropdown */}
-
-                      {openMenu === client.id && (
-                        <div className="absolute right-0 top-12 z-50 w-64 bg-[#0F172A] border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
-
-                          <button
-  onClick={() => {
-    setOrderClient(client);
-    setOpenMenu(null);
-  }}
-  className="w-full text-left px-4 py-3 hover:bg-slate-700/50 transition"
->
-  📦 Voir les commandes
-</button>
-
-                        <button
-  onClick={() => {
-    setWarningClient(client);
-    setOpenMenu(null);
-  }}
-  className="w-full text-left px-4 py-3 text-yellow-400 hover:bg-yellow-500/10 transition"
->
-  ⚠️ Envoyer un avertissement
-</button>
-
-                          <button
-  onClick={() => {
-    updateStatus(client.id, "Suspendu");
-    setOpenMenu(null);
-  }}
-  className="w-full text-left px-4 py-3 text-orange-400 hover:bg-orange-500/10 transition"
->
-  ⏸️ Suspendre le compte
-</button>
-{client.statut !== "Bloqué" ? (
-  <button
-    onClick={() => {
-      updateStatus(client.id, "Bloqué");
-      setOpenMenu(null);
-    }}
-    className="w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 transition"
-  >
-    🚫 Bloquer le compte
-  </button>
-) : (
-  <button
-    onClick={() => {
-      updateStatus(client.id, "Actif");
-      setOpenMenu(null);
-    }}
-    className="w-full text-left px-4 py-3 text-green-400 hover:bg-green-500/10 transition"
-  >
-    🔓 Débloquer le compte
-  </button>
-)}
-
-                         <button
-  onClick={() => {
-    setClientToDelete(client);
-    setOpenMenu(null);
-  }}
-  className="w-full text-left px-4 py-3 text-red-400 hover:bg-red-500/10 transition"
->
-  🗑️ Supprimer le compte
-</button>
-
-                        </div>
-                      )}
-
-                    </div>
-
+              {clientsFiltres.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-6 py-10 text-center text-sm text-[#B8B8BE]"
+                  >
+                    Aucun client trouvé.
                   </td>
                 </tr>
-              ))}
+              )}
+
+              {clientsFiltres.map((client) => {
+                const statut = obtenirStatutClient(client);
+                const commandes = obtenirServicesClient(client.id_client).length;
+
+                return (
+                  <tr
+                    key={client.id_client}
+                    className="border-b border-[#2D2D31] transition last:border-b-0 hover:bg-[#111113]"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={client.photo}
+                          alt={`${client.prenom} ${client.nom}`}
+                          onClick={() => setImageSelectionnee(client.photo)}
+                          className="h-11 w-11 cursor-pointer rounded-full border border-[#2D2D31] object-cover transition hover:scale-105 hover:ring-2 hover:ring-[#FF6257]"
+                        />
+
+                        <div>
+                          <p className="font-semibold text-white">
+                            {client.prenom} {client.nom}
+                          </p>
+
+                          <p className="text-xs text-[#B8B8BE]">
+                            Client MBOKA
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-[#B8B8BE]">
+                      {client.email}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-[#B8B8BE]">
+                      {client.Telephone}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm font-semibold text-white">
+                      {commandes}
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <BadgeStatut
+                        statut={statut}
+                        className={getStatusClass(statut)}
+                      />
+                    </td>
+
+                    <td className="px-6 py-4">
+                      <div className="relative flex justify-center gap-2">
+                        <button
+                          onClick={() => setClientSelectionne(client)}
+                          className="flex items-center gap-2 rounded-xl border border-[#FF6257]/40 bg-[#FF6257]/10 px-4 py-2 text-sm font-semibold text-[#FF6257] transition hover:bg-[#FF6257] hover:text-white"
+                        >
+                          <Eye size={16} />
+                          Voir
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            setMenuOuvert(
+                              menuOuvert === client.id_client
+                                ? null
+                                : client.id_client
+                            )
+                          }
+                          className="rounded-xl border border-[#2D2D31] bg-[#111113] p-2 text-[#B8B8BE] transition hover:border-[#FF6257]/40 hover:text-white"
+                        >
+                          <MoreVertical size={18} />
+                        </button>
+
+                        {menuOuvert === client.id_client && (
+                          <MenuActions
+                            client={client}
+                            statut={statut}
+                            modifierStatut={modifierStatut}
+                            setClientCommandes={setClientCommandes}
+                            setClientAvertir={setClientAvertir}
+                            setClientASupprimer={setClientASupprimer}
+                            setMenuOuvert={setMenuOuvert}
+                          />
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
-
         </div>
+      </section>
 
+      {imageSelectionnee && (
+        <ImageModal
+          image={imageSelectionnee}
+          onClose={() => setImageSelectionnee(null)}
+        />
+      )}
+
+      {clientASupprimer && (
+        <ConfirmationModal
+          client={clientASupprimer}
+          onClose={() => setClientASupprimer(null)}
+          onConfirm={supprimerClient}
+        />
+      )}
+
+      {clientAvertir && (
+        <AvertissementModal
+          client={clientAvertir}
+          message={messageAvertissement}
+          setMessage={setMessageAvertissement}
+          onClose={() => {
+            setClientAvertir(null);
+            setMessageAvertissement("");
+          }}
+          onSend={envoyerAvertissement}
+        />
+      )}
+
+      {clientCommandes && (
+        <CommandesModal
+          client={clientCommandes}
+          services={obtenirServicesClient(clientCommandes.id_client)}
+          depenses={obtenirDepensesClient(clientCommandes.id_client)}
+          onClose={() => setClientCommandes(null)}
+        />
+      )}
+
+      {clientSelectionne && (
+        <ClientDrawer
+          client={clientSelectionne}
+          statut={obtenirStatutClient(clientSelectionne)}
+          wallet={obtenirWalletClient(clientSelectionne.id_client)}
+          commandes={obtenirServicesClient(clientSelectionne.id_client).length}
+          depenses={obtenirDepensesClient(clientSelectionne.id_client)}
+          avertissements={obtenirAvertissementsClient(
+            clientSelectionne.id_client
+          )}
+          signalements={obtenirSignalementsClient(clientSelectionne.id_client)}
+          getStatusClass={getStatusClass}
+          onClose={() => setClientSelectionne(null)}
+        />
+      )}
+    </main>
+  );
+}
+
+function CarteStatistique({
+  titre,
+  valeur,
+  icone,
+}: {
+  titre: string;
+  valeur: number;
+  icone: ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] p-3 transition hover:border-[#FF6257]/40 hover:shadow-[0_8px_30px_rgba(255,98,87,0.10)]">
+      <div className="mb-4 flex items-center justify-between">
+        <span className="text-sm text-[#B8B8BE]">{titre}</span>
+
+        <div className="rounded-xl bg-[#FF6257]/10 p-2 text-[#FF6257]">
+          {icone}
+        </div>
       </div>
 
-      {selectedImage && (
-  <>
-    <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
-      onClick={() => setSelectedImage(null)}
-    />
+      <h2 className="text-sm font-bold">{valeur}</h2>
+    </div>
+  );
+}
 
-    <div className="fixed inset-0 z-[101] flex items-center justify-center p-4">
+function CarteClientMobile({
+  client,
+  statut,
+  commandes,
+  depenses,
+  getStatusClass,
+  menuOuvert,
+  setMenuOuvert,
+  setClientSelectionne,
+  setImageSelectionnee,
+  modifierStatut,
+  setClientCommandes,
+  setClientAvertir,
+  setClientASupprimer,
+}: {
+  client: Clients;
+  statut: StatutClient;
+  commandes: number;
+  depenses: number;
+  getStatusClass: (statut: StatutClient) => string;
+  menuOuvert: number | null;
+  setMenuOuvert: (id: number | null) => void;
+  setClientSelectionne: (client: Clients) => void;
+  setImageSelectionnee: (image: string) => void;
+  modifierStatut: (idClient: number, statut: StatutClient) => void;
+  setClientCommandes: (client: Clients) => void;
+  setClientAvertir: (client: Clients) => void;
+  setClientASupprimer: (client: Clients) => void;
+}) {
+  return (
+    <div className="rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] p-4">
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          <img
+            src={client.photo}
+            alt={`${client.prenom} ${client.nom}`}
+            onClick={() => setImageSelectionnee(client.photo)}
+            className="h-12 w-12 shrink-0 cursor-pointer rounded-full border border-[#2D2D31] object-cover"
+          />
 
+          <div className="min-w-0">
+            <p className="truncate font-semibold">
+              {client.prenom} {client.nom}
+            </p>
+
+            <p className="truncate text-xs text-[#B8B8BE]">{client.email}</p>
+          </div>
+        </div>
+
+        <BadgeStatut statut={statut} className={getStatusClass(statut)} />
+      </div>
+
+      <div className="mb-4 grid gap-2 text-sm text-[#B8B8BE]">
+        <p className="flex items-center gap-2">
+          <Phone size={14} className="text-[#FF6257]" />
+          {client.Telephone}
+        </p>
+
+        <p className="flex items-center gap-2">
+          <ShoppingBag size={14} className="text-[#FF6257]" />
+          {commandes} commande{commandes > 1 ? "s" : ""}
+        </p>
+
+        <p className="flex items-center gap-2">
+          <Wallet size={14} className="text-[#FF6257]" />
+          {formatMontant(depenses)}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => setClientSelectionne(client)}
+          className="flex items-center justify-center gap-2 rounded-xl border border-[#FF6257]/40 bg-[#FF6257]/10 px-3 py-2 text-sm font-semibold text-[#FF6257]"
+        >
+          <Eye size={15} />
+          Voir
+        </button>
+
+        <button
+          onClick={() =>
+            setMenuOuvert(menuOuvert === client.id_client ? null : client.id_client)
+          }
+          className="flex items-center justify-center gap-2 rounded-xl border border-[#2D2D31] px-3 py-2 text-sm font-semibold text-[#B8B8BE]"
+        >
+          <MoreVertical size={15} />
+          Actions
+        </button>
+      </div>
+
+      {menuOuvert === client.id_client && (
+        <MenuActions
+          client={client}
+          statut={statut}
+          modifierStatut={modifierStatut}
+          setClientCommandes={setClientCommandes}
+          setClientAvertir={setClientAvertir}
+          setClientASupprimer={setClientASupprimer}
+          setMenuOuvert={setMenuOuvert}
+        />
+      )}
+    </div>
+  );
+}
+
+function MenuActions({
+  client,
+  statut,
+  modifierStatut,
+  setClientCommandes,
+  setClientAvertir,
+  setClientASupprimer,
+  setMenuOuvert,
+}: {
+  client: Clients;
+  statut: StatutClient;
+  modifierStatut: (idClient: number, statut: StatutClient) => void;
+  setClientCommandes: (client: Clients) => void;
+  setClientAvertir: (client: Clients) => void;
+  setClientASupprimer: (client: Clients) => void;
+  setMenuOuvert: (id: number | null) => void;
+}) {
+  return (
+    <div className="mt-3 overflow-hidden rounded-xl border border-[#2D2D31] bg-[#111113] shadow-2xl md:absolute md:right-0 md:top-12 md:z-[100] md:mt-0 md:w-64">
+      <BoutonMenu
+        onClick={() => {
+          setClientCommandes(client);
+          setMenuOuvert(null);
+        }}
+      >
+        📦 Voir les commandes
+      </BoutonMenu>
+
+      <BoutonMenu
+        className="text-yellow-400 hover:bg-yellow-500/10"
+        onClick={() => {
+          setClientAvertir(client);
+          setMenuOuvert(null);
+        }}
+      >
+        ⚠️ Envoyer un avertissement
+      </BoutonMenu>
+
+      <BoutonMenu
+        className="text-orange-400 hover:bg-orange-500/10"
+        onClick={() => {
+          modifierStatut(client.id_client, "Suspendu");
+          setMenuOuvert(null);
+        }}
+      >
+        ⏸️ Suspendre le compte
+      </BoutonMenu>
+
+      {statut !== "Bloqué" ? (
+        <BoutonMenu
+          className="text-red-400 hover:bg-red-500/10"
+          onClick={() => {
+            modifierStatut(client.id_client, "Bloqué");
+            setMenuOuvert(null);
+          }}
+        >
+          🚫 Bloquer le compte
+        </BoutonMenu>
+      ) : (
+        <BoutonMenu
+          className="text-green-400 hover:bg-green-500/10"
+          onClick={() => {
+            modifierStatut(client.id_client, "Actif");
+            setMenuOuvert(null);
+          }}
+        >
+          🔓 Débloquer le compte
+        </BoutonMenu>
+      )}
+
+      <BoutonMenu
+        className="text-red-400 hover:bg-red-500/10"
+        onClick={() => {
+          setClientASupprimer(client);
+          setMenuOuvert(null);
+        }}
+      >
+        🗑️ Supprimer le compte
+      </BoutonMenu>
+    </div>
+  );
+}
+
+function BoutonMenu({
+  children,
+  onClick,
+  className = "text-[#B8B8BE] hover:bg-[#FF6257]/10 hover:text-white",
+}: {
+  children: ReactNode;
+  onClick: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full px-4 py-3 text-left text-sm transition ${className}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function BadgeStatut({
+  statut,
+  className,
+}: {
+  statut: StatutClient;
+  className: string;
+}) {
+  return (
+    <span
+      className={`w-fit rounded-full border px-3 py-1 text-[11px] font-semibold ${className}`}
+    >
+      {statut}
+    </span>
+  );
+}
+
+function ImageModal({ image, onClose }: { image: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
       <button
-        onClick={() => setSelectedImage(null)}
-        className="absolute top-6 right-6 bg-white/10 hover:bg-white/20 rounded-full p-3"
+        onClick={onClose}
+        className="absolute right-6 top-6 rounded-full border border-[#2D2D31] bg-[#1B1B1D] p-3 text-white"
       >
         <X size={24} />
       </button>
 
       <img
-        src={selectedImage}
+        src={image}
         alt="Photo du client"
-        className="max-w-full md:max-w-[700px] max-h-[85vh] rounded-3xl shadow-2xl object-cover"
+        className="max-h-[85vh] max-w-full rounded-3xl object-cover shadow-2xl md:max-w-[700px]"
       />
-
-    </div>
-  </>
-)}
-
-{/* Confirmation suppression */}
-{clientToDelete && (
-  <div className="fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-4">
-
-    <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 w-full max-w-md">
-
-      <h3 className="text-xl font-semibold mb-4">
-        Confirmation
-      </h3>
-
-      <p className="text-slate-300 mb-6">
-        Voulez-vous vraiment supprimer le client
-        <span className="font-bold">
-          {" "}{clientToDelete.nom}
-        </span> ?
-      </p>
-
-      <div className="flex justify-end gap-3">
-
-        <button
-          onClick={() => setClientToDelete(null)}
-          className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600"
-        >
-          Annuler
-        </button>
-
-        <button
-          onClick={() => {
-            setClientsData(
-              clientsData.filter(
-                (c) => c.id !== clientToDelete.id
-              )
-            );
-
-            setClientToDelete(null);
-          }}
-          className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700"
-        >
-          Supprimer
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-)}
-
-{/* Modal Avertissement */}
-{warningClient && (
-  <div className="fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-4">
-
-    <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 w-full max-w-lg">
-
-      <h3 className="text-xl font-semibold mb-4">
-        Envoyer un avertissement
-      </h3>
-
-      <p className="text-slate-400 mb-4">
-        Client : {warningClient.nom}
-      </p>
-
-      <textarea
-        value={warningMessage}
-        onChange={(e) => setWarningMessage(e.target.value)}
-        placeholder="Saisissez votre message..."
-        className="w-full h-32 bg-slate-800 border border-slate-700 rounded-xl p-4 outline-none focus:border-yellow-500 resize-none"
-      />
-
-      <div className="flex justify-end gap-3 mt-6">
-
-        <button
-          onClick={() => {
-            setWarningClient(null);
-            setWarningMessage("");
-          }}
-          className="px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600"
-        >
-          Annuler
-        </button>
-
-        <button
-          onClick={() => {
-
-            if (!warningMessage.trim()) return;
-
-            setClientsData(
-              clientsData.map((c) =>
-                c.id === warningClient.id
-                  ? {
-                      ...c,
-                      avertissements: [
-                        ...c.avertissements,
-                        warningMessage,
-                      ],
-                    }
-                  : c
-              )
-            );
-
-            setWarningMessage("");
-            setWarningClient(null);
-          }}
-          className="px-4 py-2 bg-yellow-600 rounded-lg hover:bg-yellow-700"
-        >
-          Envoyer
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-)}
-
-{/* Modal Commandes */}
-{orderClient && (
-  <div className="fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-4">
-
-    <div className="bg-[#0F172A] border border-slate-800 rounded-2xl p-6 w-full max-w-lg">
-
-      <h3 className="text-xl font-semibold mb-4">
-        Commandes du client
-      </h3>
-
-      <div className="space-y-4">
-
-        <div className="bg-slate-800/40 rounded-xl p-4">
-          <p className="text-slate-400 text-sm">
-            Client
-          </p>
-
-          <p className="mt-1 font-semibold">
-            {orderClient.nom}
-          </p>
-        </div>
-
-        <div className="bg-slate-800/40 rounded-xl p-4">
-          <p className="text-slate-400 text-sm">
-            Nombre total de commandes
-          </p>
-
-          <p className="mt-1 text-2xl font-bold text-[#FF5B57]">
-            {orderClient.commandes}
-          </p>
-        </div>
-
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-          <p className="text-blue-300">
-            Cette section sera connectée à l'API des commandes lors de l'intégration backend.
-          </p>
-        </div>
-
-      </div>
-
-      <div className="flex justify-end mt-6">
-
-        <button
-          onClick={() => setOrderClient(null)}
-          className="px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600"
-        >
-          Fermer
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-)}
-            {/* Drawer Client */}
-
-      {selectedClient && (
-        <>
-          {/* Overlay */}
-
-          <div
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
-            onClick={() => setSelectedClient(null)}
-          />
-
-          {/* Drawer */}
-
-          <div className="fixed top-0 right-0 h-screen w-full sm:w-[450px] bg-[#0F172A] border-l border-slate-800 z-50 overflow-y-auto shadow-2xl animate-in slide-in-from-right duration-300">
-
-            {/* Header */}
-
-            <div className="flex items-center justify-between p-6 border-b border-slate-800">
-
-              <h2 className="text-xl font-bold">
-                Détails du client
-              </h2>
-
-              <button
-                onClick={() => setSelectedClient(null)}
-                className="p-2 rounded-lg hover:bg-slate-800 transition"
-              >
-                <X size={20} />
-              </button>
-
-            </div>
-
-            {/* Contenu */}
-
-            <div className="p-6">
-
-              {/* Avatar */}
-
-              <div className="flex flex-col items-center mb-8">
-
-<div className="h-28 w-28 rounded-full overflow-hidden border-4 border-[#FF5B57] shadow-lg">
-  <img
-    src={selectedClient.photo}
-    alt={selectedClient.nom}
-    className="w-full h-full object-cover"
-  />
-</div>
-
-                <h3 className="mt-4 text-xl font-semibold">
-                  {selectedClient.nom}
-                </h3>
-
-                <span
-                  className={`mt-2 px-3 py-1 rounded-full text-xs ${getStatusClass(
-                    selectedClient.statut
-                  )}`}
-                >
-                  {selectedClient.statut}
-                </span>
-
-              </div>
-
-              {/* Informations */}
-
-              <div className="space-y-4">
-
-                <div className="bg-slate-800/40 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm">Email</p>
-                  <p className="mt-1">
-                    {selectedClient.email}
-                  </p>
-                </div>
-
-                <div className="bg-slate-800/40 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm">Téléphone</p>
-                  <p className="mt-1">
-                    {selectedClient.telephone}
-                  </p>
-                </div>
-
-                <div className="bg-slate-800/40 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm">
-                    Date d'inscription
-                  </p>
-                  <p className="mt-1">
-                    {selectedClient.inscription}
-                  </p>
-                </div>
-
-                <div className="bg-slate-800/40 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm">
-                    Nombre de commandes
-                  </p>
-                  <p className="mt-1 text-lg font-semibold">
-                    {selectedClient.commandes}
-                  </p>
-                </div>
-
-                <div className="bg-slate-800/40 rounded-xl p-4">
-                  <p className="text-slate-400 text-sm">
-                    Montant total dépensé
-                  </p>
-                  <p className="mt-1 text-lg font-semibold text-green-400">
-                    {selectedClient.depenses}
-                  </p>
-                </div>
-
-              </div>
-
-              {/* Historique */}
-
-              <div className="mt-8">
-
-                <h4 className="font-semibold text-lg mb-4">
-                  Historique des avertissements
-                </h4>
-
-                <div className="space-y-3">
-
-                  {selectedClient.avertissements.map(
-                    (item: string, index: number) => (
-                      <div
-                        key={index}
-                        className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4"
-                      >
-                        <p className="text-yellow-300">
-                          {item}
-                        </p>
-                      </div>
-                    )
-                  )}
-
-                </div>
-
-              </div>
-
-            </div>
-
-          </div>
-        </>
-      )}
     </div>
   );
+}
+
+function ConfirmationModal({
+  client,
+  onClose,
+  onConfirm,
+}: {
+  client: Clients;
+  onClose: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-md rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] p-6">
+        <div className="mb-4 flex items-center gap-3 text-red-400">
+          <Trash2 />
+          <h3 className="text-xl font-semibold text-white">Confirmation</h3>
+        </div>
+
+        <p className="mb-6 text-sm text-[#B8B8BE]">
+          Voulez-vous vraiment supprimer le client{" "}
+          <span className="font-bold text-white">
+            {client.prenom} {client.nom}
+          </span>{" "}
+          ?
+        </p>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded-xl border border-[#2D2D31] px-4 py-2 text-[#B8B8BE] hover:text-white"
+          >
+            Annuler
+          </button>
+
+          <button
+            onClick={onConfirm}
+            className="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700"
+          >
+            Supprimer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AvertissementModal({
+  client,
+  message,
+  setMessage,
+  onClose,
+  onSend,
+}: {
+  client: Clients;
+  message: string;
+  setMessage: (message: string) => void;
+  onClose: () => void;
+  onSend: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] p-6">
+        <div className="mb-4 flex items-center gap-3 text-yellow-400">
+          <AlertTriangle />
+
+          <h3 className="text-xl font-semibold text-white">
+            Envoyer un avertissement
+          </h3>
+        </div>
+
+        <p className="mb-4 text-sm text-[#B8B8BE]">
+          Client : {client.prenom} {client.nom}
+        </p>
+
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Saisissez votre message..."
+          className="h-32 w-full resize-none rounded-xl border border-[#2D2D31] bg-[#111113] p-4 text-white outline-none placeholder:text-[#B8B8BE]/60 focus:border-yellow-500"
+        />
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            onClick={onClose}
+            className="rounded-xl border border-[#2D2D31] px-4 py-2 text-[#B8B8BE] hover:text-white"
+          >
+            Annuler
+          </button>
+
+          <button
+            onClick={onSend}
+            className="rounded-xl bg-yellow-600 px-4 py-2 font-semibold text-white hover:bg-yellow-700"
+          >
+            Envoyer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CommandesModal({
+  client,
+  services,
+  depenses,
+  onClose,
+}: {
+  client: Clients;
+  services: ReturnType<typeof servicesMock.filter>;
+  depenses: number;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
+      <div className="w-full max-w-lg rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] p-6">
+        <h3 className="mb-1 text-xl font-semibold">Commandes du client</h3>
+
+        <p className="mb-5 text-sm text-[#B8B8BE]">
+          {client.prenom} {client.nom}
+        </p>
+
+        <div className="mb-5 grid grid-cols-2 gap-3">
+          <InfoBloc label="Total commandes" value={String(services.length)} />
+
+          <InfoBloc label="Total dépensé" value={formatMontant(depenses)} />
+        </div>
+
+        <div className="max-h-72 space-y-3 overflow-y-auto pr-1">
+          {services.length > 0 ? (
+            services.map((service) => {
+              const paiement = paiementsMock.find(
+                (item) => item.id_service === service.id_service
+              );
+
+              return (
+                <div
+                  key={service.id_service}
+                  className="rounded-xl border border-[#2D2D31] bg-[#111113] p-4"
+                >
+                  <p className="font-semibold text-white">{service.intitule}</p>
+
+                  <p className="mt-1 text-sm text-[#B8B8BE]">
+                    {service.description}
+                  </p>
+
+                  <div className="mt-3 flex items-center justify-between text-sm">
+                    <span className="text-[#B8B8BE]">
+                      {service.date_creation}
+                    </span>
+
+                    <span className="font-semibold text-white">
+                      {formatMontant(paiement?.montant_ajoute ?? 0)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <MessageVide texte="Aucune commande pour ce client." />
+          )}
+        </div>
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={onClose}
+            className="rounded-xl border border-[#2D2D31] px-4 py-2 text-[#B8B8BE] hover:border-[#FF6257]/40 hover:text-white"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ClientDrawer({
+  client,
+  statut,
+  wallet,
+  commandes,
+  depenses,
+  avertissements,
+  signalements,
+  getStatusClass,
+  onClose,
+}: {
+  client: Clients;
+  statut: StatutClient;
+  wallet?: { montant: number; devise: string };
+  commandes: number;
+  depenses: number;
+  avertissements: Avertissements[];
+  signalements: ReturnType<typeof signalementsMock.filter>;
+  getStatusClass: (statut: StatutClient) => string;
+  onClose: () => void;
+}) {
+  return (
+    <>
+      <div
+        className="fixed inset-0 z-[9998] bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      <aside className="fixed right-0 top-0 z-[9999] h-screen w-full overflow-y-auto border-l border-[#2D2D31] bg-[#1B1B1D] shadow-2xl sm:w-[450px]">
+        <div className="flex items-center justify-between border-b border-[#2D2D31] p-5">
+          <h2 className="text-xl font-bold">Détails du client</h2>
+
+          <button
+            onClick={onClose}
+            className="rounded-xl border border-[#2D2D31] p-2 text-[#B8B8BE] hover:text-white"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-5">
+          <div className="mb-8 flex flex-col items-center text-center">
+            <img
+              src={client.photo}
+              alt={`${client.prenom} ${client.nom}`}
+              className="h-28 w-28 rounded-full border-4 border-[#FF6257] object-cover shadow-lg"
+            />
+
+            <h3 className="mt-4 text-xl font-semibold">
+              {client.prenom} {client.nom}
+            </h3>
+
+            <span
+              className={`mt-2 rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClass(
+                statut
+              )}`}
+            >
+              {statut}
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            <InfoBloc icon={<Mail size={15} />} label="Email" value={client.email} />
+            <InfoBloc
+              icon={<Phone size={15} />}
+              label="Téléphone"
+              value={client.Telephone}
+            />
+            <InfoBloc
+              icon={<Calendar size={15} />}
+              label="Date d'inscription"
+              value={client.date_creation}
+            />
+            <InfoBloc
+              icon={<ShoppingBag size={15} />}
+              label="Nombre de commandes"
+              value={String(commandes)}
+            />
+            <InfoBloc
+              icon={<Wallet size={15} />}
+              label="Montant total dépensé"
+              value={formatMontant(depenses)}
+            />
+            <InfoBloc
+              icon={<Wallet size={15} />}
+              label="Solde wallet"
+              value={formatMontant(wallet?.montant ?? 0)}
+            />
+          </div>
+
+          <div className="mt-8">
+            <h4 className="mb-4 text-lg font-semibold">
+              Historique des avertissements
+            </h4>
+
+            <div className="space-y-3">
+              {avertissements.length > 0 ? (
+                avertissements.map((item) => (
+                  <div
+                    key={item.id_avertissement}
+                    className="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-4"
+                  >
+                    <p className="text-sm text-yellow-300">
+                      {item.contenu_avertissement}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <MessageVide texte="Aucun avertissement." />
+              )}
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <h4 className="mb-4 text-lg font-semibold">
+              Signalements reçus
+            </h4>
+
+            <div className="space-y-3">
+              {signalements.length > 0 ? (
+                signalements.map((item) => (
+                  <div
+                    key={item.id_signalement}
+                    className="rounded-xl border border-red-500/20 bg-red-500/10 p-4"
+                  >
+                    <p className="text-sm font-semibold text-red-300">
+                      {item.categorie}
+                    </p>
+
+                    <p className="mt-1 text-sm text-[#B8B8BE]">
+                      {item.Signalement}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <MessageVide texte="Aucun signalement." />
+              )}
+            </div>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+function InfoBloc({
+  icon,
+  label,
+  value,
+}: {
+  icon?: ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-xl border border-[#2D2D31] bg-[#111113] p-4">
+      <p className="flex items-center gap-2 text-sm text-[#B8B8BE]">
+        {icon && <span className="text-[#FF6257]">{icon}</span>}
+        {label}
+      </p>
+
+      <p className="mt-1 font-semibold text-white">{value}</p>
+    </div>
+  );
+}
+
+function MessageVide({ texte }: { texte: string }) {
+  return (
+    <div className="rounded-xl border border-[#2D2D31] bg-[#111113] p-6 text-center text-sm text-[#B8B8BE]">
+      {texte}
+    </div>
+  );
+}
+
+function getStatusClass(statut: StatutClient) {
+  switch (statut) {
+    case "Actif":
+      return "border-green-500/30 bg-green-500/10 text-green-400";
+    case "Sous surveillance":
+      return "border-yellow-500/30 bg-yellow-500/10 text-yellow-400";
+    case "Suspendu":
+      return "border-orange-500/30 bg-orange-500/10 text-orange-400";
+    case "Bloqué":
+      return "border-red-500/30 bg-red-500/10 text-red-400";
+  }
+}
+
+function formatMontant(montant: number) {
+  return `${montant.toLocaleString("fr-FR")} FCFA`;
 }

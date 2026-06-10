@@ -18,7 +18,6 @@ import DashboardAdmin from "./Pages/Administrateur/DashboardAdmin";
 
 // Client
 import AccueilClient from "./Pages/Client/Accueil";
-import ServicesClient from "./Pages/Client/ServicesClient";
 import MonCompte from "./Pages/Client/MonCompte";
 // Général
 import Messagerie from "./Pages/General/Messagerie";
@@ -51,7 +50,7 @@ function AnimatedRoutes() {
         <Route path="/services" element={<Services />} />
         {/* Client */}
         <Route path="/client" element={<AccueilClient />} />
-        <Route path="/client/services" element={<ServicesClient />} />
+        <Route path="/client/services" element={<Services />} />
         <Route path="/client/messagerie" element={<Messagerie />} />
         <Route path="/client/compte" element={<MonCompte />} />
         <Route path="/MonCompte" element={<MonCompte />} />
