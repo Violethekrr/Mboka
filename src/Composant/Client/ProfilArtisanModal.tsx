@@ -60,14 +60,14 @@ export default function ProfilArtisanModal({
   const fullNom = `${prenom} ${nom}`;
 
   return (
-    <div className="fixed inset-0 z-[999] flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-999 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm">
       {/* Backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative bg-[#1e1e24] border border-[#2a2a32] rounded-t-3xl sm:rounded-3xl w-full sm:max-w-2xl max-h-[92dvh] flex flex-col shadow-[0_-16px_60px_#00000080] sm:shadow-[0_32px_80px_#00000090] overflow-hidden">
 
         {/* ── Cover + photo ── */}
-        <div className="relative h-32 bg-gradient-to-br from-[#2a1a1a] via-[#1e1e22] to-[#1a1a2e] shrink-0">
+        <div className="relative h-32 bg-linear-to-br from-[#2a1a1a] via-[#1e1e22] to-[#1a1a2e] shrink-0">
           {/* Bouton fermer */}
           <button
             onClick={onClose}
