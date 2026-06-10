@@ -145,6 +145,7 @@ export type ArtisanCardProps = {
   badge?: "Expert" | "Premium";
   id_freelancer?: number;
   currentClientId?: number;
+  onOpenProfil?: (artisan: ProfilArtisanDataType) => void;
   onOpenComments?: (freelancerId: number, nom: string, photo: string, metier: string) => void;
   onOpenForm?: (artisan: {
     photo: string;
@@ -155,6 +156,21 @@ export type ArtisanCardProps = {
     verified: boolean;
     disponible: boolean;
   }) => void;
+};
+
+export type ProfilArtisanDataType = {
+  id_freelancer: number;
+  nom: string;
+  prenom: string;
+  photo: string;
+  metier: string;
+  note: number;
+  avis: number;
+  distance: string;
+  prix: string;
+  disponible: boolean;
+  verified: boolean;
+  badge?: "Expert" | "Premium";
 };
 
 export type Category = {
@@ -185,6 +201,7 @@ export type FormulaireProps = {
 };
 
 export type RecommendedSectionProps = {
+  onOpenProfil?: (artisan: ProfilArtisanDataType) => void;
   onOpenComments?: (freelancerId: number, nom: string, photo: string, metier: string) => void;
   onOpenForm?: (artisan: {
     photo: string;
@@ -196,9 +213,11 @@ export type RecommendedSectionProps = {
     disponible: boolean;
   }) => void;
 };
+
 export type FeaturedArtisansProps = {
   searchQuery?: string;
   selectedCategory?: string | null;
+  onOpenProfil?: (artisan: ProfilArtisanDataType) => void;
   onOpenComments?: (freelancerId: number, nom: string, photo: string, metier: string) => void;
   onOpenForm?: (artisan: {
     photo: string;
@@ -232,7 +251,31 @@ export type FormModalData = {
   } | null;
 };
 
+export type ProfilModalData = {
+  isOpen: boolean;
+  artisanData: ProfilArtisanDataType | null;
+};
+
 export type ModalState = {
   comments: CommentsModalData;
   form: FormModalData;
+  profil: ProfilModalData;
+};
+
+export type ProfilArtisanModalProps = {
+  freelancerId: number;
+  nom: string;
+  prenom: string;
+  photo: string;
+  metier: string;
+  note: number;
+  avis: number;
+  distance: string;
+  prix: string;
+  disponible: boolean;
+  verified: boolean;
+  badge?: "Expert" | "Premium";
+  onClose: () => void;
+  onOpenComments: (freelancerId: number, nom: string, photo: string, metier: string) => void;
+  onOpenForm: (artisan: FormModalData["artisan"]) => void;
 };
