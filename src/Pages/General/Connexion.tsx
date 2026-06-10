@@ -29,7 +29,7 @@ export default function Connexion() {
   );
 
   if (client) {
-    navigate("/MonCompte");
+    navigate("/client");
   } else if (freelancer) {
     navigate("/Freelancer");
   } else if (admin) {
