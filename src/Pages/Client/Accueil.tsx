@@ -11,7 +11,8 @@ import PromoBanner from "../../Composant/Client/PromoBanner";
 import ReviewsSection from "../../Composant/Client/ReviewsSection";
 import CommentairesModal from "../../Composant/Client/CommentairesModal";
 import FormulaireDeDemande from "../../Composant/Client/FormulaireDeDemande";
-import type { FormModalData ,   ModalState } from "../../Type"
+import ProfilArtisanModal from "../../Composant/Client/ProfilArtisanModal";
+import type { FormModalData, ModalState, ProfilArtisanDataType } from "../../Type";
 
 const pageVariants = {
   initial: { opacity: 0, y: 12 },
@@ -19,35 +20,45 @@ const pageVariants = {
   exit: { opacity: 0, y: -12 },
 };
 
+const initialState: ModalState = {
+  comments: { isOpen: false, freelancerId: 0, freelancerNom: "", freelancerPhoto: "", freelancerMetier: "" },
+  form: { isOpen: false, artisan: null },
+  profil: { isOpen: false, artisanData: null }
+};
+
 export default function Accueil() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
   // États pour les modals
-  const [modalState, setModalState] = useState<ModalState>({
-    comments: { isOpen: false, freelancerId: 0, freelancerNom: "", freelancerPhoto: "", freelancerMetier: "" },
-    form: { isOpen: false, artisan: null }
-  });
+  const [modalState, setModalState] = useState<ModalState>(initialState);
+
+  const openProfilModal = (artisanData: ProfilArtisanDataType) => {
+    setModalState({
+      comments: { isOpen: false, freelancerId: 0, freelancerNom: "", freelancerPhoto: "", freelancerMetier: "" },
+      form: { isOpen: false, artisan: null },
+      profil: { isOpen: true, artisanData }
+    });
+  };
 
   const openCommentsModal = (freelancerId: number, nom: string, photo: string, metier: string) => {
     setModalState({
       comments: { isOpen: true, freelancerId, freelancerNom: nom, freelancerPhoto: photo, freelancerMetier: metier },
-      form: { isOpen: false, artisan: null }
+      form: { isOpen: false, artisan: null },
+      profil: { isOpen: false, artisanData: null }
     });
   };
 
   const openFormModal = (artisan: FormModalData["artisan"]) => {
     setModalState({
       comments: { isOpen: false, freelancerId: 0, freelancerNom: "", freelancerPhoto: "", freelancerMetier: "" },
-      form: { isOpen: true, artisan }
+      form: { isOpen: true, artisan },
+      profil: { isOpen: false, artisanData: null }
     });
   };
 
   const closeModals = () => {
-    setModalState({
-      comments: { isOpen: false, freelancerId: 0, freelancerNom: "", freelancerPhoto: "", freelancerMetier: "" },
-      form: { isOpen: false, artisan: null }
-    });
+    setModalState(initialState);
   };
 
   return (
@@ -68,10 +79,12 @@ export default function Accueil() {
           <FeaturedArtisans 
             searchQuery={searchQuery} 
             selectedCategory={selectedCategory}
+            onOpenProfil={openProfilModal}
             onOpenComments={openCommentsModal}
             onOpenForm={openFormModal}
           />
           <RecommendedSection 
+            onOpenProfil={openProfilModal}
             onOpenComments={openCommentsModal}
             onOpenForm={openFormModal}
           />
@@ -79,6 +92,28 @@ export default function Accueil() {
           <TrustBanner />
           <ReviewsSection />
         </div>
+
+        {/* Modal de profil */}
+        {modalState.profil.isOpen && modalState.profil.artisanData && (
+          <ProfilArtisanModal
+            key={`profil-${modalState.profil.artisanData.id_freelancer}`}
+            freelancerId={modalState.profil.artisanData.id_freelancer}
+            nom={modalState.profil.artisanData.nom}
+            prenom={modalState.profil.artisanData.prenom}
+            photo={modalState.profil.artisanData.photo}
+            metier={modalState.profil.artisanData.metier}
+            note={modalState.profil.artisanData.note}
+            avis={modalState.profil.artisanData.avis}
+            distance={modalState.profil.artisanData.distance}
+            prix={modalState.profil.artisanData.prix}
+            disponible={modalState.profil.artisanData.disponible}
+            verified={modalState.profil.artisanData.verified}
+            badge={modalState.profil.artisanData.badge}
+            onClose={closeModals}
+            onOpenComments={openCommentsModal}
+            onOpenForm={openFormModal}
+          />
+        )}
 
         {modalState.comments.isOpen && (
           <CommentairesModal
@@ -100,7 +135,6 @@ export default function Accueil() {
           />
         )}
       </motion.div>
-      
     </>
   );
 }
