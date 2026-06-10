@@ -1,9 +1,12 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode, useEffect } from "react";
 import type { Clients, Freelancers, Administrateur } from "../Type";
 
+<<<<<<< HEAD
 import {  administrateursMock } from "../constants";
 
 
+=======
+>>>>>>> 4a015a67096a135fe627786e952a66db62f54198
 export type UserRole = "client" | "freelancer" | "admin" | null;
 
 type UserContextType = {
@@ -31,10 +34,43 @@ type UserProviderProps = {
 };
 
 export const UserProvider = ({ children }: UserProviderProps) => {
+<<<<<<< HEAD
   const [role, setRole] = useState<UserRole>('admin');
 
   const [user, setUser] = useState<Clients | Freelancers | Administrateur | null>(administrateursMock[0]);
+=======
+  // Initialiser avec null (pas d'utilisateur connecté par défaut)
+  const [role, setRole] = useState<UserRole>(() => {
+    // Initialisation paresseuse : lire depuis localStorage au premier rendu
+    const savedRole = localStorage.getItem("role");
+    return savedRole ? (savedRole as UserRole) : null;
+  });
+  
+  const [user, setUser] = useState<Clients | Freelancers | Administrateur | null>(() => {
+    // Initialisation paresseuse : lire depuis localStorage au premier rendu
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      try {
+        return JSON.parse(savedUser);
+      } catch (e) {
+        console.error("Erreur lors de la restauration de la session", e);
+        return null;
+      }
+    }
+    return null;
+  });
+>>>>>>> 4a015a67096a135fe627786e952a66db62f54198
 
+  // Sauvegarder la session quand l'utilisateur change
+  useEffect(() => {
+    if (user && role) {
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("role", role);
+    } else {
+      localStorage.removeItem("user");
+      localStorage.removeItem("role");
+    }
+  }, [user, role]);
 
   return (
     <UserContext.Provider value={{ role, setRole, user, setUser }}>
