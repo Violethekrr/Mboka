@@ -9,7 +9,7 @@ function SplashScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate("/onboarding");
-    }, 6000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [navigate]);
