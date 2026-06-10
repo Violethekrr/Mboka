@@ -1,10 +1,9 @@
-import { Star, Quote } from "lucide-react";
-import { commentairesMock, clientsMock } from "../../constants";
+import { Quote, Star } from "lucide-react";
 
-// Fonction pour obtenir une note stable basée sur l'ID du commentaire
-const getStableNote = (commentaireId: number): number => {
-  // Mapping stable des notes par ID de commentaire
-  const notesMap: Record<number, number> = {
+import { clientsMock, commentairesMock } from "../../constants";
+
+function obtenirNoteStable(idCommentaire: number): number {
+  const notes: Record<number, number> = {
     1: 5.0,
     2: 4.8,
     3: 4.9,
@@ -16,71 +15,86 @@ const getStableNote = (commentaireId: number): number => {
     9: 5.0,
     10: 4.8,
   };
-  
-  return notesMap[commentaireId] || 4.5;
-};
 
-// Préparer les reviews une seule fois en dehors du composant
-const reviews = commentairesMock.slice(0, 4).map((c) => {
-  const client = clientsMock.find((cl) => cl.id_client === c.id_client);
+  return notes[idCommentaire] ?? 4.5;
+}
+
+const avisClients = commentairesMock.slice(0, 4).map((commentaire) => {
+  const client = clientsMock.find(
+    (item) => item.id_client === commentaire.id_client
+  );
+
   return {
-    ...c,
-    clientNom: client ? `${client.prenom} ${client.nom.charAt(0)}.` : "Anonyme",
+    ...commentaire,
+    clientNom: client
+      ? `${client.prenom} ${client.nom.charAt(0)}.`
+      : "Client MBOKA",
     clientPhoto: client?.photo ?? "https://picsum.photos/200",
-    note: getStableNote(c.id_commentaire),
+    note: obtenirNoteStable(commentaire.id_commentaire),
   };
 });
 
 export default function ReviewsSection() {
   return (
     <section className="mb-8">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-base md:text-lg font-bold text-white">
+          <h2 className="text-base font-bold text-white md:text-lg">
             Ce que disent nos clients
           </h2>
-          <p className="text-[11px] text-white/40 mt-0.5">Avis vérifiés</p>
+
+          <p className="mt-0.5 text-[11px] text-[#B8B8BE]">
+            Avis vérifiés après prestation
+          </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {reviews.map((r) => (
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {avisClients.map((avis) => (
           <div
-            key={`review-${r.id_commentaire}`}
-            className="bg-[#24242c] border border-[#2a2a32] rounded-2xl p-4 hover:border-[#FE686430] transition-all"
+            key={avis.id_commentaire}
+            className="rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] p-4 transition-all hover:border-[#FF6257]/40 hover:shadow-[0_8px_28px_rgba(255,98,87,0.12)]"
           >
-            <div className="flex items-start gap-2 mb-3">
+            <div className="mb-3 flex items-start gap-2">
               <img
-                src={r.clientPhoto}
-                alt={r.clientNom}
-                className="w-8 h-8 rounded-full object-cover shrink-0"
+                src={avis.clientPhoto}
+                alt={avis.clientNom}
+                className="h-8 w-8 shrink-0 rounded-full object-cover"
               />
+
               <div className="min-w-0">
-                <p className="text-xs font-bold text-white truncate">
-                  {r.clientNom}
+                <p className="truncate text-xs font-bold text-white">
+                  {avis.clientNom}
                 </p>
-                <div className="flex items-center gap-0.5 mt-0.5">
-                  {[...Array(5)].map((_, i) => (
+
+                <div className="mt-0.5 flex items-center gap-0.5">
+                  {[...Array(5)].map((_, index) => (
                     <Star
-                      key={i}
+                      key={index}
                       size={9}
                       className={
-                        i < Math.round(r.note)
-                          ? "text-amber-400 fill-amber-400"
-                          : "text-white/20"
+                        index < Math.round(avis.note)
+                          ? "fill-amber-400 text-amber-400"
+                          : "text-[#B8B8BE]/30"
                       }
                     />
                   ))}
                 </div>
               </div>
-              <Quote size={14} className="text-[#FE6864]/30 ml-auto shrink-0" />
+
+              <Quote
+                size={14}
+                className="ml-auto shrink-0 text-[#FF6257]/35"
+              />
             </div>
 
-            <p className="text-[11px] text-white/60 leading-relaxed line-clamp-3">
-              {r.commentaire}
+            <p className="line-clamp-3 text-[11px] leading-relaxed text-[#B8B8BE]">
+              {avis.commentaire}
             </p>
 
-            <p className="text-[10px] text-white/30 mt-2">{r.date}</p>
+            <p className="mt-2 text-[10px] text-[#B8B8BE]/60">
+              {avis.date}
+            </p>
           </div>
         ))}
       </div>

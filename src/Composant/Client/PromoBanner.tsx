@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function PromoBanner() {
   return (
     <section className="mb-8">
-      <div className="relative overflow-hidden rounded-2xl bg-linear-to-r from-[#FE6864] via-[#e55a56] to-[#c94540] p-6 md:p-8">
+      <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-[#B52D3A]/30 via-[#1B1B1D] to-[#111113] p-6 md:p-8">
         {/* Background decoration */}
         <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4" />
         <div className="absolute bottom-0 right-20 w-32 h-32 bg-white/5 rounded-full translate-y-1/2" />

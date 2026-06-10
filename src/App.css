@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+/* Classe réutilisable */
+/* Style unique réutilisable */
+.scrollbar-custom {
+  /* Firefox */
+  scrollbar-width: thin;                 /* réduit l'épaisseur */
+  scrollbar-color: #B52D3A transparent;  /* pouce teal sur track transparent */
+}
+
+/* Chrome, Edge, Safari */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background: transparent;
+}
+
+/* Track transparent */
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Pouce (la ligne visible) */
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: #FF6257;   /* teal-500 */
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: #FF6257;   /* teal-700 */
+}
+
+/* Supprimer les flèches */
+.scrollbar-custom::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}

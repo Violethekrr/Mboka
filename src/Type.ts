@@ -139,7 +139,7 @@ export type ArtisanCardProps = {
   note: number;
   avis: number;
   distance: string;
-  prix: string;
+  prix?: string;
   disponible: boolean;
   verified: boolean;
   badge?: "Expert" | "Premium";

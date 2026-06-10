@@ -1,117 +1,94 @@
 import { ArrowRight, Search } from "lucide-react";
 import { Link } from "react-router-dom";
-import ArtisanCard from "./ArtisanCard";
-import { freelancersMock, profilsFreelancersMock, rangsMock } from "../../constants";
-import type {FeaturedArtisansProps} from "../../Type"
 
-// Données statiques complémentaires non présentes dans le mock
-const extras: Record<number, { note: number; avis: number; distance: string; prix: string; disponible: boolean }> = {
-  1: { note: 4.8, avis: 134,  distance: "3 km", prix: "5 000", disponible: true  },
-  2: { note: 4.6, avis: 98,   distance: "2 km", prix: "7 000", disponible: false },
-  3: { note: 4.7, avis: 88,   distance: "4 km", prix: "8 000", disponible: true  },
-  4: { note: 4.5, avis: 72,   distance: "5 km", prix: "6 000", disponible: true  },
-  5: { note: 4.9,  avis: 156,  distance: "1 km", prix: "4 500", disponible: true  },
-  6: { note: 4.4,  avis: 61,   distance: "6 km", prix: "9 000", disponible: false },
-  7: { note: 4.8,  avis: 112,  distance: "2 km", prix: "6 000", disponible: true  },
-  8: { note: 4.6,  avis: 79,   distance: "3 km", prix: "8 500", disponible: false },
-  9: { note: 4.9,  avis: 201,  distance: "1 km", prix: "5 500", disponible: true  },
-  10: { note: 4.7, avis: 95,  distance: "4 km", prix: "7 000", disponible: true  },
+import ArtisanCard from "./ArtisanCard";
+
+import type { ArtisanCardProps, FeaturedArtisansProps } from "../../Type";
+
+import {
+  commentairesMock,
+  freelancersMock,
+  paiementsMock,
+  profilsFreelancersMock,
+  rangsMock,
+} from "../../constants";
+
+type ArtisanAffiche = ArtisanCardProps & {
+  secteur: string;
+  description: string;
 };
 
-// Tous les artisans disponibles
-const allArtisans = freelancersMock.map((f) => {
-  const profil = profilsFreelancersMock.find((p) => p.id_freelancer === f.id_freelancer);
-  const rang = rangsMock.find((r) => r.id_freelancer === f.id_freelancer);
-  const extra = extras[f.id_freelancer] ?? { note: 4.5, avis: 50, distance: "5 km", prix: "5 000", disponible: true };
-
-  const badge: "Expert" | "Premium" | undefined =
-    rang?.rang === "expert" ? "Expert" :
-    rang?.rang === "intermédiaire" ? "Premium" :
-    undefined;
-
-  return {
-    id: f.id_freelancer,
-    id_freelancer: f.id_freelancer,
-    photo: f.photo,
-    nom: f.nom,
-    prenom: f.prenom,
-    metier: profil?.profession ?? "Artisan",
-    secteur: profil?.secteur_activite ?? "",
-    verified: true,
-    badge,
-    ...extra,
-  };
-});
-
-
-export default function FeaturedArtisans({ 
-  searchQuery = "", 
+export default function FeaturedArtisans({
+  searchQuery = "",
   selectedCategory = null,
   onOpenComments,
   onOpenForm,
 }: FeaturedArtisansProps) {
-  // Filtrer les artisans
-  const filteredArtisans = allArtisans.filter((artisan) => {
-    // Filtre par catégorie
-    if (selectedCategory && artisan.secteur !== selectedCategory) {
-      return false;
-    }
-    
-    // Filtre par recherche (nom, prénom, métier)
-    if (searchQuery) {
-      const searchLower = searchQuery.toLowerCase();
-      return (
-        artisan.nom.toLowerCase().includes(searchLower) ||
-        artisan.prenom.toLowerCase().includes(searchLower) ||
-        artisan.metier.toLowerCase().includes(searchLower)
-      );
-    }
-    
-    return true;
+  const artisans = freelancersMock.map((freelancer) =>
+    creerArtisanAffiche(freelancer.id_freelancer)
+  );
+
+  const recherche = searchQuery.trim().toLowerCase();
+
+  const artisansFiltres = artisans.filter((artisan) => {
+    const correspondCategorie =
+      selectedCategory === null || artisan.secteur === selectedCategory;
+
+    const correspondRecherche =
+      recherche === "" ||
+      artisan.nom.toLowerCase().includes(recherche) ||
+      artisan.prenom.toLowerCase().includes(recherche) ||
+      artisan.metier.toLowerCase().includes(recherche) ||
+      artisan.secteur.toLowerCase().includes(recherche) ||
+      artisan.description.toLowerCase().includes(recherche);
+
+    return correspondCategorie && correspondRecherche;
   });
 
   return (
     <section className="mb-8">
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-base md:text-lg font-bold text-white">
-            {searchQuery || selectedCategory ? "Résultats de recherche" : "Artisans vérifiés"}
+          <h2 className="text-base font-bold text-white md:text-lg">
+            {searchQuery || selectedCategory
+              ? "Résultats de recherche"
+              : "Freelancers vérifiés"}
           </h2>
-          <p className="text-[11px] text-white/40 mt-0.5">
-            {filteredArtisans.length} artisan{filteredArtisans.length > 1 ? 's' : ''} trouvé{filteredArtisans.length > 1 ? 's' : ''}
+
+          <p className="mt-0.5 text-[11px] text-white/40">
+            {artisansFiltres.length} freelancer
+            {artisansFiltres.length > 1 ? "s" : ""} trouvé
+            {artisansFiltres.length > 1 ? "s" : ""}
           </p>
         </div>
+
         <Link
           to="/client/services"
-          className="flex items-center gap-1 text-xs text-[#FE6864] font-semibold no-underline hover:gap-2 transition-all"
+          className="flex items-center gap-1 text-xs font-semibold text-[#FF6257] no-underline transition-all hover:gap-2"
         >
           Voir tout <ArrowRight size={13} />
         </Link>
       </div>
 
-      {filteredArtisans.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 px-4 bg-[#24242c] border border-[#2a2a32] rounded-2xl text-center">
-          <Search size={48} className="text-white/20 mb-4" />
-          <h3 className="text-lg font-bold text-white mb-2">Aucun artisan trouvé</h3>
-          <p className="text-sm text-white/40 max-w-md">
-            Aucun artisan ne correspond à votre recherche "{searchQuery || selectedCategory}". 
-            Essayez d'autres mots-clés ou parcourez toutes nos catégories.
+      {artisansFiltres.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-[#2a2a32] bg-[#24242c] px-4 py-16 text-center">
+          <Search size={48} className="mb-4 text-white/20" />
+
+          <h3 className="mb-2 text-lg font-bold text-white">
+            Aucun freelancer trouvé
+          </h3>
+
+          <p className="max-w-md text-sm text-white/40">
+            Aucun freelancer ne correspond à votre recherche. Essayez un autre
+            mot-clé ou une autre catégorie.
           </p>
-          {(searchQuery || selectedCategory) && (
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-6 text-sm text-[#FE6864] font-semibold hover:underline"
-            >
-              Réinitialiser les filtres
-            </button>
-          )}
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-          {filteredArtisans.map((a) => (
-            <ArtisanCard 
-              key={a.id} 
-              {...a} 
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+          {artisansFiltres.map((artisan) => (
+            <ArtisanCard
+              key={artisan.id}
+              {...artisan}
               onOpenComments={onOpenComments}
               onOpenForm={onOpenForm}
             />
@@ -120,4 +97,90 @@ export default function FeaturedArtisans({
       )}
     </section>
   );
+}
+
+function creerArtisanAffiche(idFreelancer: number): ArtisanAffiche {
+  const freelancer = freelancersMock.find(
+    (item) => item.id_freelancer === idFreelancer
+  );
+
+  const profil = profilsFreelancersMock.find(
+    (item) => item.id_freelancer === idFreelancer
+  );
+
+  const rang = rangsMock.find((item) => item.id_freelancer === idFreelancer);
+
+  if (!freelancer) {
+    throw new Error("Freelancer introuvable");
+  }
+
+  return {
+    id: freelancer.id_freelancer,
+    id_freelancer: freelancer.id_freelancer,
+    photo: freelancer.photo,
+    nom: freelancer.nom,
+    prenom: freelancer.prenom,
+    metier: profil?.profession ?? "Freelancer",
+    secteur: profil?.secteur_activite ?? "Autre",
+    description: profil?.descritpion ?? "",
+    note: obtenirNoteMoyenne(idFreelancer),
+    avis: obtenirNombreAvis(idFreelancer),
+    distance: "À proximité",
+    prix: obtenirPrixDepart(idFreelancer),
+    disponible: estDisponible(idFreelancer),
+    verified: true,
+    badge: obtenirBadge(rang?.rang),
+  };
+}
+
+function obtenirNombreAvis(idFreelancer: number) {
+  return commentairesMock.filter(
+    (commentaire) => commentaire.id_freelancer === idFreelancer
+  ).length;
+}
+
+function obtenirNoteMoyenne(idFreelancer: number) {
+  const commentaires = commentairesMock.filter(
+    (commentaire) => commentaire.id_freelancer === idFreelancer
+  );
+
+  if (commentaires.length === 0) return 4.5;
+
+  const total = commentaires.reduce(
+    (somme, commentaire) => somme + obtenirNote(commentaire.id_commentaire),
+    0
+  );
+
+  return Number((total / commentaires.length).toFixed(1));
+}
+
+function obtenirNote(idCommentaire: number) {
+  const notes = [5, 4, 5, 3, 4, 2, 5, 4, 1, 5];
+
+  return notes[(idCommentaire - 1) % notes.length];
+}
+
+function obtenirPrixDepart(idFreelancer: number) {
+  const paiements = paiementsMock.filter(
+    (paiement) => paiement.id_freelancer === idFreelancer
+  );
+
+  if (paiements.length === 0) return "0";
+
+  const prixMinimum = Math.min(
+    ...paiements.map((paiement) => paiement.montant_ajoute)
+  );
+
+  return prixMinimum.toLocaleString("fr-FR");
+}
+
+function estDisponible(idFreelancer: number) {
+  return idFreelancer % 3 !== 0;
+}
+
+function obtenirBadge(rang?: string) {
+  if (rang === "expert") return "Expert";
+  if (rang === "intermédiaire") return "Premium";
+
+  return undefined;
 }

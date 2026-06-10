@@ -1,5 +1,19 @@
-import { Star, MapPin, Clock, CheckCircle, MessageSquare } from "lucide-react";
-import type {ArtisanCardProps} from "../../Type"
+import { useState } from "react";
+import {
+  CheckCircle,
+  Clock,
+  MapPin,
+  MessageSquare,
+  Star,
+} from "lucide-react";
+
+import type { ArtisanCardProps } from "../../Type";
+import FreelancerDetailsModal from "./FreelancerDetailsModal";
+
+type Props = ArtisanCardProps & {
+  description?: string;
+  secteur?: string;
+};
 
 export default function ArtisanCard({
   id,
@@ -10,119 +24,145 @@ export default function ArtisanCard({
   note,
   avis,
   distance,
-  prix,
   disponible,
   verified,
   badge,
   id_freelancer,
+  description,
+  secteur,
   onOpenComments,
   onOpenForm,
-}: ArtisanCardProps) {
+}: Props) {
+  const [modalOuvert, setModalOuvert] = useState(false);
 
-  const handleOpenComments = () => {
-    if (onOpenComments) {
-      onOpenComments(id_freelancer ?? id, `${prenom} ${nom}`, photo, metier);
-    }
-  };
+  const nomComplet = `${prenom} ${nom}`;
 
-  const handleOpenForm = () => {
-    if (onOpenForm) {
-      onOpenForm({
-        photo,
-        nom: `${prenom} ${nom}`,
-        metier,
-        note,
-        avis,
-        verified,
-        disponible,
-      });
-    }
-  };
+  function ouvrirCommentaires() {
+    onOpenComments?.(id_freelancer ?? id, nomComplet, photo, metier);
+  }
+
+  function ouvrirFormulaire() {
+    onOpenForm?.({
+      photo,
+      nom: nomComplet,
+      metier,
+      note,
+      avis,
+      verified,
+      disponible,
+    });
+
+    setModalOuvert(false);
+  }
 
   return (
     <>
-      <div className="group relative bg-[#24242c] border border-[#2a2a32] hover:border-[#FE686440] rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-[0_8px_32px_#FE686418] hover:-translate-y-0.5">
-
-        {/* Badge */}
+      <div className="group relative overflow-hidden rounded-2xl border border-[#2D2D31] bg-[#1B1B1D] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#FF6257]/40 hover:shadow-[0_8px_32px_rgba(255,98,87,0.14)]">
         {badge && (
-          <div className="absolute top-3 left-3 z-10">
-            <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
-              badge === "Expert" ? "bg-[#FE6864] text-white" : "bg-amber-500 text-white"
-            }`}>
+          <div className="absolute left-3 top-3 z-10">
+            <span
+              className={`rounded-full px-2 py-0.5 text-[10px] font-black ${
+                badge === "Expert"
+                  ? "bg-[#FF6257] text-white"
+                  : "bg-[#FF7B6B] text-white"
+              }`}
+            >
               {badge}
             </span>
           </div>
         )}
 
-        {/* Disponibility dot */}
-        <div className="absolute top-3 right-3 z-10 flex items-center gap-1 bg-[#1e1e22]/80 backdrop-blur-sm border border-[#2a2a32] rounded-full px-2 py-1">
-          <span className={`w-1.5 h-1.5 rounded-full ${disponible ? "bg-emerald-400 animate-pulse" : "bg-gray-500"}`} />
-          <span className="text-[9px] font-semibold text-white/70">
+        <div className="absolute right-3 top-3 z-10 flex items-center gap-1 rounded-full border border-[#2D2D31] bg-[#1B1B1D]/85 px-2 py-1 backdrop-blur-sm">
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              disponible ? "animate-pulse bg-emerald-400" : "bg-gray-500"
+            }`}
+          />
+
+          <span className="text-[9px] font-semibold text-[#B8B8BE]">
             {disponible ? "Dispo" : "Occupé"}
           </span>
         </div>
 
-        {/* Cover gradient + photo */}
-        <div className="relative h-24 md:h-28 bg-linear-to-br from-[#2a1a1a] to-[#1a1a2e]">
+        <div className="relative h-24 bg-gradient-to-br from-[#B52D3A]/40 via-[#1B1B1D] to-[#111113] md:h-28">
           <div className="absolute bottom-0 left-4 translate-y-1/2">
-            <div className="relative w-14 h-14 md:w-16 md:h-16 rounded-2xl border-2 border-[#24242c] overflow-hidden shadow-lg">
-              <img src={photo} alt={`${prenom} ${nom}`} className="w-full h-full object-cover" />
+            <div className="relative h-14 w-14 overflow-hidden rounded-2xl border-2 border-[#1B1B1D] shadow-lg md:h-16 md:w-16">
+              <img
+                src={photo}
+                alt={nomComplet}
+                className="h-full w-full object-cover"
+              />
+
               {verified && (
-                <div className="absolute bottom-0 right-0 bg-[#FE6864] rounded-full p-0.5 translate-x-0.5 translate-y-0.5 border border-[#24242c]">
-                  <CheckCircle size={10} className="text-white fill-white" />
+                <div className="absolute bottom-0 right-0 rounded-full border border-[#1B1B1D] bg-[#FF6257] p-0.5">
+                  <CheckCircle size={10} className="fill-white text-white" />
                 </div>
               )}
             </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="pt-9 px-4 pb-4">
-          <div className="mb-2">
-            <h3 className="text-sm font-bold text-white leading-tight">
-              {prenom} {nom.charAt(0).toUpperCase()}.
-            </h3>
-            <p className="text-[11px] text-[#FE6864] font-semibold mt-0.5">{metier}</p>
-          </div>
+        <div className="px-4 pb-4 pt-9">
+          <h3 className="text-sm font-bold leading-tight text-white">
+            {prenom} {nom.charAt(0).toUpperCase()}.
+          </h3>
 
-          {/* Rating cliquable → ouvre les commentaires */}
+          <p className="mt-0.5 text-[11px] font-semibold text-[#FF6257]">
+            {metier}
+          </p>
+
           <button
-            onClick={handleOpenComments}
-            className="flex items-center gap-1 mb-3 group/stars hover:opacity-80 transition-opacity"
+            onClick={ouvrirCommentaires}
+            className="mb-3 mt-2 flex items-center gap-1 transition-opacity hover:opacity-80"
           >
-            <Star size={11} className="text-amber-400 fill-amber-400" />
+            <Star size={11} className="fill-amber-400 text-amber-400" />
             <span className="text-xs font-bold text-white">{note}</span>
-            <span className="text-[10px] text-white/40 group-hover/stars:text-[#FE6864] transition-colors">
+
+            <span className="text-[10px] text-[#B8B8BE] hover:text-[#FF6257]">
               ({avis} avis)
             </span>
-            <MessageSquare size={10} className="text-white/20 group-hover/stars:text-[#FE6864] transition-colors ml-0.5" />
+
+            <MessageSquare size={10} className="ml-0.5 text-[#B8B8BE]/40" />
           </button>
 
-          {/* Distance + délai */}
-          <div className="flex items-center justify-between text-[10px] text-white/50 mb-3">
+          <div className="mb-4 flex items-center justify-between text-[10px] text-[#B8B8BE]">
             <div className="flex items-center gap-1">
-              <MapPin size={10} className="text-[#FE6864]" />
+              <MapPin size={10} className="text-[#FF6257]" />
               <span>{distance}</span>
             </div>
+
             <div className="flex items-center gap-1">
               <Clock size={10} />
               <span>Rapide</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-black text-white">
-              À partir de <span className="text-[#FE6864]">{prix} FCFA</span>
-            </span>
-            <button
-              onClick={handleOpenForm}
-              className="text-[10px] font-bold bg-[#FE6864] hover:bg-[#e55a56] text-white px-3 py-1.5 rounded-xl transition-colors whitespace-nowrap"
-            >
-              Contacter
-            </button>
-          </div>
+          <button
+            onClick={() => setModalOuvert(true)}
+            className="w-full rounded-xl border border-[#FF6257]/40 bg-[#FF6257]/10 px-3 py-2 text-[11px] font-bold text-[#FF6257] transition-colors hover:bg-[#FF6257] hover:text-white"
+          >
+            Consulter le profil
+          </button>
         </div>
       </div>
+
+      <FreelancerDetailsModal
+        ouvert={modalOuvert}
+        onClose={() => setModalOuvert(false)}
+        freelancer={{
+          photo,
+          nom: nomComplet,
+          metier,
+          secteur,
+          description,
+          note,
+          avis,
+          disponible,
+          verified,
+        }}
+        onVoirAvis={ouvrirCommentaires}
+        onDemanderService={ouvrirFormulaire}
+      />
     </>
   );
 }
