@@ -36,7 +36,7 @@ export default function Connexion() {
       setUser(client);
       navigate("/client");
     } else if (freelancer) {
-      setRole("freelancer");
+      setRole("prestataire");
       setUser(freelancer);
       navigate("/freelancer");
     } else if (admin) {

@@ -170,7 +170,7 @@ export default function DashboardAdmin() {
 
           <p className="mt-2 max-w-2xl text-sm text-[#B8B8BE]">
             Suivez l’activité de MBOKA : utilisateurs, commandes, revenus,
-            freelancers et signalements.
+            prestataires et signalements.
           </p>
         </div>
 

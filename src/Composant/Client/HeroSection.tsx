@@ -34,7 +34,7 @@ export default function HeroSection() {
             </h1>
           </div>
           <p className="text-white/60 text-sm md:text-base max-w-md">
-            Que recherchez-vous aujourd'hui ? Des artisans qualifiés près de chez vous, disponibles maintenant.
+            Que recherchez-vous aujourd'hui ? Des prestateires qualifiés près de chez vous, disponibles maintenant.
           </p>
 
           {/* Location badge */}

@@ -19,7 +19,7 @@ const TEXT = {
 
 // Statut local des comptes (suspendu/banni/actif)
 type CompteStatut = "actif" | "suspendu" | "banni";
-interface CompteStatutMap { id: number; type: "client" | "freelancer"; statut: CompteStatut }
+interface CompteStatutMap { id: number; type: "client" | "prestataire"; statut: CompteStatut }
 
 // ── Statut signalement ────────────────────────────────────
 type Statut = "en_attente" | "en_cours" | "resolu" | "rejete";
@@ -37,13 +37,13 @@ const compteCfgColor: Record<CompteStatut, string> = {
 };
 
 // Helpers pour trouver client/freelancer
-function findUser(id: number, type: "client" | "freelancer", clients: Clients[], freelancers: Freelancers[]) {
+function findUser(id: number, type: "client" | "prestataire", clients: Clients[], freelancers: Freelancers[]) {
   if (type === "client") {
     const c = clients.find(u => u.id_client === id);
     return c ? { id: c.id_client, nom: c.nom, prenom: c.prenom, photo: c.photo, type: "client" as const } : null;
   }
   const f = freelancers.find(u => u.id_freelancer === id);
-  return f ? { id: f.id_freelancer, nom: f.nom, prenom: f.prenom, photo: f.photo, type: "freelancer" as const } : null;
+  return f ? { id: f.id_freelancer, nom: f.nom, prenom: f.prenom, photo: f.photo, type: "prestataire" as const } : null;
 }
 
 // ── Modal ─────────────────────────────────────────────────
@@ -56,7 +56,7 @@ function ModalSignalement({
   signaleStatut: CompteStatut;
   onClose: () => void;
   onUpdate: (id: number, statut: Statut, note: string) => void;
-  onAction: (id: number, type: "client" | "freelancer", action: "suspendre" | "bannir" | "restaurer") => void;
+  onAction: (id: number, type: "client" | "prestataire", action: "suspendre" | "bannir" | "restaurer") => void;
 }) {
   const [statut, setStatut] = useState<Statut>((sig.statut as Statut) ?? "en_attente");
   const [note, setNote] = useState(sig.note_admin ?? "");
@@ -194,7 +194,7 @@ export default function CompteSignale() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [showFilters, setShowFilters] = useState(false);
 
-  const getCompteStatut = (id: number, type: "client" | "freelancer"): CompteStatut => {
+  const getCompteStatut = (id: number, type: "client" | "prestataire"): CompteStatut => {
     return comptesStatut.find(c => c.id === id && c.type === type)?.statut ?? "actif";
   };
 
@@ -215,8 +215,8 @@ export default function CompteSignale() {
     let list = signalements.filter(s => {
       const matchS = filtreStatut === "tout" || s.statut === filtreStatut;
       const matchC = filtreCategorie === "tout" || s.categorie === filtreCategorie;
-      const sigUser = findUser(s.id_signalé, s.signaleur_type==='client'? "freelancer" : "client", clients, freelancers);
-      const srUser  = findUser(s.id_signaleur, s.signaleur_type as "client" | "freelancer", clients, freelancers);
+      const sigUser = findUser(s.id_signalé, s.signaleur_type==='client'? "prestataire" : "client", clients, freelancers);
+      const srUser  = findUser(s.id_signaleur, s.signaleur_type as "client" | "prestataire", clients, freelancers);
       const matchQ = search === "" ||
         `${sigUser?.prenom} ${sigUser?.nom} ${srUser?.prenom} ${srUser?.nom} ${s.Signalement} ${s.categorie}`
           .toLowerCase().includes(search.toLowerCase());
@@ -235,7 +235,7 @@ export default function CompteSignale() {
       setSignalements(p => p.filter(s => s.id_signalement !== id));
   };
 
-  const actionCompte = (id: number, type: "client" | "freelancer", action: "suspendre" | "bannir" | "restaurer") => {
+  const actionCompte = (id: number, type: "client" | "prestataire", action: "suspendre" | "bannir" | "restaurer") => {
     const map = { suspendre: "suspendu", bannir: "banni", restaurer: "actif" } as const;
     setComptesStatut(p => {
       const exists = p.find(c => c.id === id && c.type === type);
@@ -248,8 +248,8 @@ export default function CompteSignale() {
     const rows = [
       ["ID", "Signaleur", "Signalé", "Signalement", "Catégorie", "Statut", "Date"],
       ...filtered.map(s => {
-        const sr = findUser(s.id_signaleur, s.signaleur_type as "client" | "freelancer", clients, freelancers);
-        const sg = findUser(s.id_signalé, s.signaleur_type==='client'? "freelancer" : "client", clients, freelancers);
+        const sr = findUser(s.id_signaleur, s.signaleur_type as "client" | "prestataire", clients, freelancers);
+        const sg = findUser(s.id_signalé, s.signaleur_type==='client'? "prestataire" : "client", clients, freelancers);
         return [s.id_signalement, `${sr?.prenom} ${sr?.nom}`, `${sg?.prenom} ${sg?.nom}`, s.Signalement, s.categorie, s.statut, s.date];
       })
     ];
@@ -434,8 +434,8 @@ export default function CompteSignale() {
             )}
 
             {filtered.map((sig, idx) => {
-              const signaleurType = sig.signaleur_type as "client" | "freelancer";
-              const signaleType   = sig.signaleur_type==='client'? "freelancer" : "client";
+              const signaleurType = sig.signaleur_type as "client" | "prestataire";
+              const signaleType   = sig.signaleur_type==='client'? "prestataire" : "client";
               const signaleurUser = findUser(sig.id_signaleur, signaleurType, clients, freelancers);
               const signaleUser   = findUser(sig.id_signalé,   signaleType,   clients, freelancers);
               const sCfg          = statutCfg[(sig.statut as Statut) ?? "en_attente"];
@@ -503,8 +503,8 @@ export default function CompteSignale() {
           </div>
           <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-3 bg-[#16161c] border border-[#22222c] rounded-[14px] overflow-hidden flex-1">
             {filtered.map((sig) => {
-              const signaleurType = sig.signaleur_type as "client" | "freelancer";
-              const signaleType   = sig.signaleur_type==='client'? "freelancer" : "client";
+              const signaleurType = sig.signaleur_type as "client" | "prestataire";
+              const signaleType   = sig.signaleur_type==='client'? "prestataire" : "client";
               const signaleurUser = findUser(sig.id_signaleur, signaleurType, clients, freelancers);
               const signaleUser   = findUser(sig.id_signalé,   signaleType,   clients, freelancers);
               const sCfg          = statutCfg[(sig.statut as Statut) ?? "en_attente"];
@@ -659,9 +659,9 @@ export default function CompteSignale() {
         {selected && (
           <ModalSignalement
             sig={selected}
-            signaleurUser={findUser(selected.id_signaleur, selected.signaleur_type as "client" | "freelancer", clients, freelancers)}
-            signaleUser={findUser(selected.id_signalé, selected.signaleur_type==='client'? "freelancer" : "client", clients, freelancers)}
-            signaleStatut={getCompteStatut(selected.id_signalé, selected.signaleur_type==='client'? "freelancer" : "client")}
+            signaleurUser={findUser(selected.id_signaleur, selected.signaleur_type as "client" | "prestataire", clients, freelancers)}
+            signaleUser={findUser(selected.id_signalé, selected.signaleur_type==='client'? "prestataire" : "client", clients, freelancers)}
+            signaleStatut={getCompteStatut(selected.id_signalé, selected.signaleur_type==='client'? "prestataire" : "client")}
             onClose={() => setSelected(null)}
             onUpdate={updateSignalement}
             onAction={actionCompte}

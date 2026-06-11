@@ -1,9 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import {
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+import {Routes,Route,useLocation} from "react-router-dom";
 
 import ScrollTop from "./Composant/ScrollTop";
 import Layout from "./Composant/Layout";

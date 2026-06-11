@@ -26,7 +26,9 @@ nom:string,
  Telephone:string,
  photo:string,
  mot_de_passe:string,
- date_creation:string}
+ date_creation:string,
+ ville: string
+}
 
 export interface Administrateur {
 id_admin:number,
@@ -108,7 +110,7 @@ export interface Signalement {
   id_signalement: number;
   id_signaleur: number;
   id_signalé: number;
-  signaleur_type: "client" | "freelancer" | "admin";
+  signaleur_type: "client" | "prestataire" | "admin";
   Signalement: string;
   statut?: "en_attente" | "en_cours" | "resolu" | "rejete";
   date?: string;

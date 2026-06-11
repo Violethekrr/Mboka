@@ -12,8 +12,8 @@ interface Props {
 }
 export default function Layout({ children } : Props) {
   const { role } = useUser();
-  const Nav = role === 'freelancer' ? NacFreelancer : role === 'client' ? NacClient : NavAdmin;
-  const Foot = role === 'freelancer' ? FootFreelancer : role === 'client' ? FootClient : footAdmin;
+  const Nav = role === 'prestataire' ? NacFreelancer : role === 'client' ? NacClient : NavAdmin;
+  const Foot = role === 'prestataire' ? FootFreelancer : role === 'client' ? FootClient : footAdmin;
 
     const location = useLocation();
     //La liste des routes où la Navbar et le Footer ne doivent pas apparaître

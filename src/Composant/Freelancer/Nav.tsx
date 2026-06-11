@@ -144,7 +144,7 @@ export default function NavBar() {
               className="w-6.5 h-6.5 rounded-lg object-cover" />
             <div>
               <div className={`${TEXT.xs} font-bold text-white leading-none`}>{user?.nom}</div>
-              <div className={`${TEXT.xs} text-white/90 mt-0.5`}>Freelancer</div>
+              <div className={`${TEXT.xs} text-white/90 mt-0.5`}>Prestataire</div>
             </div>
           </div>
 

@@ -4,7 +4,7 @@ import type { Clients, Freelancers, Administrateur } from "../Type";
 
 
 
-export type UserRole = "client" | "freelancer" | "admin" | null;
+export type UserRole = "client" | "prestataire" | "admin" | null;
 
 type UserContextType = {
   role: UserRole;

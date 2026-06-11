@@ -42,7 +42,7 @@ const allArtisans = freelancersMock.map((f) => {
     prix: extra.prix,
     note: extra.note,
     avis: extra.avis,
-    distance: extra.distance,
+    distance: f.ville,
     disponible: extra.disponible,
   };
 });
@@ -82,7 +82,7 @@ export default function FeaturedArtisans({
             {searchQuery || selectedCategory ? "Résultats de recherche" : "Prestataires vérifiés"}
           </h2>
           <p className="text-[11px] text-white/40 mt-0.5">
-            {filteredArtisans.length} artisan{filteredArtisans.length > 1 ? 's' : ''} trouvé{filteredArtisans.length > 1 ? 's' : ''}
+            {filteredArtisans.length} prestataire{filteredArtisans.length > 1 ? 's' : ''} trouvé{filteredArtisans.length > 1 ? 's' : ''}
           </p>
         </div>
         <Link
@@ -96,9 +96,9 @@ export default function FeaturedArtisans({
       {filteredArtisans.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-4 bg-[#24242c] border border-[#2a2a32] rounded-2xl text-center">
           <Search size={48} className="text-white/20 mb-4" />
-          <h3 className="text-lg font-bold text-white mb-2">Aucun artisan trouvé</h3>
+          <h3 className="text-lg font-bold text-white mb-2">Aucun prestateire trouvé</h3>
           <p className="text-sm text-white/40 max-w-md">
-            Aucun artisan ne correspond à votre recherche "{searchQuery || selectedCategory}". 
+            Aucun prestateire ne correspond à votre recherche "{searchQuery || selectedCategory}". 
             Essayez d'autres mots-clés ou parcourez toutes nos catégories.
           </p>
           {(searchQuery || selectedCategory) && (

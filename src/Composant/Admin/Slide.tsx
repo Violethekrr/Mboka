@@ -29,7 +29,7 @@ const adminLinks = [
   },
   {
     id: 3,
-    label: "Freelancers",
+    label: "Prestataires",
     route: "/administrateur/freelancers",
     icon: <Briefcase size={15} />,
   },

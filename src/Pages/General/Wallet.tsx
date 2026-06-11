@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Wallet, Plus, ArrowDownLeft, ArrowUpRight, CreditCard,
-  Smartphone, Building2, X, Check, ChevronRight,
+  Wallet, Plus, ArrowDownLeft, ArrowUpRight, 
+  Smartphone, X, Check, ChevronRight,
   TrendingUp, TrendingDown, Clock, Filter, Download,
   Eye, EyeOff, AlertCircle,
 } from "lucide-react";
@@ -21,7 +21,7 @@ const TEXT = {
 };
 
 type TxType    = "credit" | "debit" | "pending";
-type MethodeId = "mobile_money" | "carte_visa" | "paypal" | "compte_bancaire";
+type MethodeId = "mobile_money" | "airtel_money" 
 
 interface Transaction {
   id: number;
@@ -44,11 +44,9 @@ interface MethodePaiement {
 }
 
 const methodesMock: MethodePaiement[] = [
-  { id: "mobile_money",    label: "Mobile Money",    detail: "Orange •••• 0098", icon: <Smartphone size={16} />, color: "#f59e0b" },
-  { id: "carte_visa",      label: "Carte Visa",      detail: "•••• 4242",        icon: <CreditCard size={16} />, color: "#3b82f6" },
-  { id: "paypal",          label: "PayPal",          detail: "user@email.com",   icon: <span className="font-black text-[13px]">P</span>, color: "#0ea5e9" },
-  { id: "compte_bancaire", label: "Compte bancaire", detail: "LCB •••• 1234",    icon: <Building2 size={16} />,  color: "#8b5cf6" },
-];
+  { id: "mobile_money",    label: "Mobile Money",    detail: "Mtn •••• 0098", icon: <Smartphone size={16} />, color: "#f59e0b" },
+  { id: "airtel_money",      label: "Airtel_Money",      detail: "Airtel•••• 4242",        icon: <Smartphone size={16} />, color: "#f63b41" },
+ ];
 
 const statutTxCfg = {
   complete: { label: "Complété", color: "text-emerald-400", bg: "bg-emerald-400/10" },
@@ -78,8 +76,8 @@ function buildTransactions(userId: number, isFreelancer: boolean, devise: string
     });
 
   return [...txs,
-    { id: 9001, label: "Virement en attente", sous_label: "Traitement en cours…", montant: 60000, devise, type: "pending" as TxType, date: "Aujourd'hui", methode: "Virement", statut: "en_cours" as const },
-    { id: 9002, label: isFreelancer ? "Retrait vers Mobile Money" : "Dépôt Visa", sous_label: isFreelancer ? "Orange •••• 0098" : "Visa •••• 4242", montant: isFreelancer ? -100000 : 100000, devise, type: (isFreelancer ? "debit" : "credit") as TxType, date: "06 mai 2024", methode: isFreelancer ? "Mobile Money" : "Carte Visa", statut: "complete" as const },
+    { id: 9001, label: "Virement en attente", sous_label: "Traitement en cours…", montant: 60000, devise, type: "pending" as TxType, date: "Aujourd'hui", methode: "Mtn_Money", statut: "en_cours" as const },
+    { id: 9002, label: isFreelancer ? "Retrait vers Mobile Money" : "Dépôt Airtel Money", sous_label: isFreelancer ? "Mtn •••• 0098" : "Airtel •••• 4242", montant: isFreelancer ? -100000 : 100000, devise, type: (isFreelancer ? "debit" : "credit") as TxType, date: "06 mai 2024", methode: isFreelancer ? "Mobile Money" : "Carte Visa", statut: "complete" as const },
     { id: 9003, label: "Frais de service", sous_label: "Commission MBOKA 5%", montant: -5000, devise, type: "debit" as TxType, date: "05 mai 2024", methode: "Automatique", statut: "complete" as const },
   ];
 }
