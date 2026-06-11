@@ -186,7 +186,7 @@ export default function DashboardAdmin() {
             onClick={() => navigate("/administrateur/freelancers")}
             className="rounded-lg bg-[#FF6257] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#E84D4D]"
           >
-            Gestion freelancers
+            Gestion prestataires
           </button>
         </div>
       </section>

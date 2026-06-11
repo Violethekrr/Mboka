@@ -116,14 +116,12 @@ export default function RecommendedSection({ onOpenComments, onOpenForm }: Recom
               </button>
 
               <div className="flex items-center justify-between">
-                <span className="text-xs font-black text-white">
-                  À partir de <span className="text-[#FE6864]">{r.prix} FCFA</span>
-                </span>
+              
                 <button
                   onClick={() => handleOpenForm({
                     photo: r.photo,
                     nom: `${r.prenom} ${r.nom}`,
-                    metier: r.profil?.profession ?? "Artisan",
+                    metier: r.profil?.profession ?? "Prestataire",
                     note: r.note,
                     avis: r.avis,
                     verified: true,

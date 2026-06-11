@@ -103,8 +103,8 @@ export const clientsMock: Clients[] = [
   },
   {
     id_client: 10,
-    nom: "Client",
-  prenom: "Clt",
+    nom: "William",
+  prenom: "Ro",
   email: "client@gmail.com",
     Telephone: "071123456",
     photo: "https://picsum.photos/210",
